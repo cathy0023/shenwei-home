@@ -16,3 +16,10 @@ shenwei-home-api/.env
 node_modules/
 dist/
 .DS_Store
+*.db
+*.db-shm
+*.db-wal
+uploads/
+.venv/
+__pycache__/
+.pytest_cache/
