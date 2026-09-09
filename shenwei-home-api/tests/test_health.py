@@ -30,13 +30,17 @@ def test_health_ok(client):
 def test_health_reports_missing_config(client, monkeypatch):
     """渠道凭证缺失时 health 仍 200，但 config 段标记缺失项。
 
-    config 为 import 时冻结的单例（跨测试会残留其他用例写入的环境值），
-    这里直接对单例字段打桩，精确模拟"凭证缺失"场景。
+    config 为 import 时冻结的 dataclass 单例（跨测试会残留其他用例写入的
+    环境值），frozen 不可原地改；用 dataclasses.replace 派生缺失凭证的新
+    实例并临时替换模块引用（不可变更新范式）。
     """
+    import dataclasses
+
     from app import config as config_mod
 
-    monkeypatch.setattr(config_mod.config, "channel_app_key", "")
-    monkeypatch.setattr(config_mod.config, "channel_app_secret", "")
+    missing_cfg = dataclasses.replace(
+        config_mod.config, channel_app_key="", channel_app_secret="")
+    monkeypatch.setattr(config_mod, "config", missing_cfg)
     resp = client.get("/health")
     assert resp.status_code == 200
     body = resp.json()

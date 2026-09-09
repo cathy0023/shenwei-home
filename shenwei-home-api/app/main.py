@@ -5,7 +5,7 @@
 import logging
 from fastapi import FastAPI
 
-from .config import config
+from . import config as config_mod
 from .db import get_conn
 
 logging.basicConfig(
@@ -18,14 +18,17 @@ def create_app() -> FastAPI:
 
     @app.get("/health")
     def health():
-        """深度检查：DB 可连 + 配置完整性（缺失项可见，不阻塞启动）。"""
+        """深度检查：DB 可连 + 配置完整性（缺失项可见，不阻塞启动）。
+
+        经 config_mod 间接引用，测试替换 app.config.config 单例即生效。
+        """
         body: dict = {"status": "ok", "db": "ok", "config_missing": []}
         try:
             get_conn().execute("SELECT 1").fetchone()
         except Exception as exc:  # pragma: no cover - 防御式
             body["db"] = f"error: {exc}"
             body["status"] = "degraded"
-        body["config_missing"] = config.validate()
+        body["config_missing"] = config_mod.config.validate()
         return body
 
     from .routers.callback import router as callback_router
