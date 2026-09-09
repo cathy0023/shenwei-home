@@ -28,9 +28,15 @@ def test_health_ok(client):
 
 
 def test_health_reports_missing_config(client, monkeypatch):
-    """渠道凭证缺失时 health 仍 200，但 config 段标记缺失项。"""
-    monkeypatch.setenv("CHANNEL_APP_KEY", "")
-    monkeypatch.setenv("CHANNEL_APP_SECRET", "")
+    """渠道凭证缺失时 health 仍 200，但 config 段标记缺失项。
+
+    config 为 import 时冻结的单例（跨测试会残留其他用例写入的环境值），
+    这里直接对单例字段打桩，精确模拟"凭证缺失"场景。
+    """
+    from app import config as config_mod
+
+    monkeypatch.setattr(config_mod.config, "channel_app_key", "")
+    monkeypatch.setattr(config_mod.config, "channel_app_secret", "")
     resp = client.get("/health")
     assert resp.status_code == 200
     body = resp.json()
