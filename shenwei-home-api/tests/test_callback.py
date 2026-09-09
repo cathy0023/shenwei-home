@@ -17,8 +17,16 @@ SECRET = "test_secret"
 @pytest.fixture()
 def client(tmp_path, monkeypatch):
     monkeypatch.setenv("SHM_SQLITE_PATH", str(tmp_path / "t.db"))
-    monkeypatch.setenv("CHANNEL_APP_KEY", "test_key")
-    monkeypatch.setenv("CHANNEL_APP_SECRET", SECRET)
+    import dataclasses
+
+    from app import config as config_mod
+
+    test_cfg = dataclasses.replace(
+        config_mod.config,
+        channel_app_key="test_key",
+        channel_app_secret=SECRET,
+    )
+    monkeypatch.setattr(config_mod, "config", test_cfg)
     from app.main import create_app
 
     return TestClient(create_app())

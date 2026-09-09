@@ -11,7 +11,7 @@ import time
 
 from fastapi import APIRouter, Request
 
-from ..config import config
+from .. import config as config_mod
 from ..db import execute_write, get_conn, now_ms
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def _verify(request: Request, body: bytes) -> tuple[bool, str]:
     if not ts.isdigit() or abs(int(time.time()) - int(ts)) > TIMESTAMP_TOLERANCE_S:
         return False, "timestamp_skew"
     expected = hmac.new(
-        config.channel_app_secret.encode(),
+        config_mod.config.channel_app_secret.encode(),
         f"{ts}\n{nonce}\n{hashlib.sha256(body).hexdigest()}".encode(),
         hashlib.sha256,
     ).hexdigest()

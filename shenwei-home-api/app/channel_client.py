@@ -14,7 +14,7 @@ from dataclasses import dataclass
 
 import httpx
 
-from .config import config
+from . import config as config_mod
 
 logger = logging.getLogger(__name__)
 
@@ -53,10 +53,10 @@ class ChannelClient:
         nonce = nonce or secrets.token_hex(16)
         return {
             "Content-Type": "application/json",
-            "X-Channel-App-Key": config.channel_app_key,
+            "X-Channel-App-Key": config_mod.config.channel_app_key,
             "X-Channel-Timestamp": ts,
             "X-Channel-Nonce": nonce,
-            "X-Channel-Signature": sign(config.channel_app_secret, body, ts, nonce),
+            "X-Channel-Signature": sign(config_mod.config.channel_app_secret, body, ts, nonce),
         }
 
     def _inbox_body(self, p: InboxPayload) -> bytes:
@@ -88,9 +88,9 @@ class ChannelClient:
         重试策略：401 timestamp_skew 校时后单次重试；5xx 指数退避（复用同一
         external_msg_id 与签名 body）；其余 4xx 直接失败。
         """
-        if not config.channel_enabled:
+        if not config_mod.config.channel_enabled:
             return "skipped_disabled"
-        url = config.channel_base_url.rstrip("/") + config.channel_endpoint_prefix + "/inbox"
+        url = config_mod.config.channel_base_url.rstrip("/") + config_mod.config.channel_endpoint_prefix + "/inbox"
         body = self._inbox_body(InboxPayload(
             external_msg_id, conversation_key, external_user_id, msg_type, content, display_name))
 

@@ -12,10 +12,20 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 @pytest.fixture()
 def client(monkeypatch):
-    monkeypatch.setenv("CHANNEL_BASE_URL", "https://ext.example.com")
-    monkeypatch.setenv("CHANNEL_ENDPOINT_PREFIX", "/api/v1/sop/im/external")
-    monkeypatch.setenv("CHANNEL_APP_KEY", "test_key")
-    monkeypatch.setenv("CHANNEL_APP_SECRET", "test_secret")
+    """用 dataclasses.replace 派生测试凭证的 config 单例（frozen 不可原地改）。"""
+    import dataclasses
+
+    from app import config as config_mod
+
+    test_cfg = dataclasses.replace(
+        config_mod.config,
+        channel_base_url="https://ext.example.com",
+        channel_endpoint_prefix="/api/v1/sop/im/external",
+        channel_app_key="test_key",
+        channel_app_secret="test_secret",
+        channel_enabled=True,
+    )
+    monkeypatch.setattr(config_mod, "config", test_cfg)
     from app.channel_client import ChannelClient
 
     return ChannelClient()
