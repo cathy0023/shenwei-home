@@ -1,4 +1,5 @@
 """会话 token：32B 随机 hex，存 sessions 表，TTL 默认 7 天。"""
+import re
 import secrets
 import sqlite3
 
@@ -28,5 +29,11 @@ def resolve_openid(token: str) -> str | None:
 
 
 def mock_openid(code: str) -> str:
-    """开发期 mock 身份（WX_MINI_* 为空时）；格式固定 mock_<code>。"""
+    """开发期 mock 身份（WX_MINI_* 为空时）。
+
+    code 必须是安全字符集（字母/数字/下划线/连字符），防路径穿越
+    （openid 会用作 uploads 子目录）与越权伪造。
+    """
+    if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", code):
+        raise ValueError("invalid_code")
     return f"mock_{code}"

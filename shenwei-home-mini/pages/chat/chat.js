@@ -62,11 +62,16 @@ Page({
   async loadHistory() {
     try {
       const res = await api.list(this.baseUrl, this.token);
-      const messages = res.items.map(this.toViewModel);
+      // list 按 created_at DESC 返回（最新在前）；聊天 UI 需要 ASC（最新在底部）
+      const messages = res.items.map(this.toViewModel).reverse();
       this.setData({
         messages,
         welcomeVisible: messages.length === 0,
       });
+      if (messages.length) {
+        // 以最新一条的 created_at 初始化轮询游标，避免 poll 从 0 开始重放全量历史
+        this.lastSince = Math.max(...res.items.map((i) => i.created_at));
+      }
       this.scrollToBottom();
     } catch (err) {
       console.error('loadHistory failed', err);
@@ -76,12 +81,13 @@ Page({
 
   /** 下拉加载更早历史。 */
   async loadEarlier() {
-    const first = this.data.messages.find((m) => m.role !== 'temp');
+    const first = this.data.messages.find((m) => !String(m.id).startsWith('temp-'));
     if (!first) return;
     try {
       const res = await api.list(this.baseUrl, this.token, first.id);
       if (res.items.length) {
-        const earlier = res.items.map(this.toViewModel);
+        // DESC 批次反转成 ASC 后前插
+        const earlier = res.items.map(this.toViewModel).reverse();
         this.setData({ messages: [...earlier, ...this.data.messages] });
       }
     } catch (err) {
@@ -243,9 +249,9 @@ Page({
   },
 
   scrollToBottom() {
-    wx.nextTick(() => {
-      wx.pageScrollTo({ scrollTop: 999999, duration: 200 });
-    });
+    // scroll-view 布局：pageScrollTo 无效，用 scroll-into-view 锚点（chat.wxml 已绑定）
+    this.setData({ scrollInto: '' });
+    wx.nextTick(() => this.setData({ scrollInto: 'page-bottom' }));
   },
 
   // ---------- 面板 ----------

@@ -36,6 +36,13 @@ def test_login_mock_mode_returns_token(client):
     assert len(body["token"]) >= 32
 
 
+def test_login_rejects_unsafe_code(client):
+    """P0 回归：code 含路径字符必须拒绝（防 uploads 目录穿越 + 越权伪造）。"""
+    for bad in ("../../etc", "a/b", "a b", "../..", "x" * 65, "点"):
+        resp = client.post("/api/auth/login", json={"code": bad})
+        assert resp.status_code == 422, f"code={bad!r} 应被拒绝"
+
+
 def test_login_rejects_empty_code(client):
     resp = client.post("/api/auth/login", json={"code": ""})
     assert resp.status_code == 422

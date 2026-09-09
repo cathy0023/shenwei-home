@@ -7,6 +7,7 @@ import hashlib
 import hmac
 import json
 import logging
+import re
 import time
 
 from fastapi import APIRouter, Request
@@ -30,6 +31,9 @@ def _verify(request: Request, body: bytes) -> tuple[bool, str]:
         return False, "missing_headers"
     if not ts.isdigit() or abs(int(time.time()) - int(ts)) > TIMESTAMP_TOLERANCE_S:
         return False, "timestamp_skew"
+    # 签名必须是 64 位 hex：compare_digest 对非 ASCII str 抛 TypeError，先拦为 401
+    if not re.fullmatch(r"[0-9a-fA-F]{64}", signature):
+        return False, "bad_signature"
     expected = hmac.new(
         config_mod.config.channel_app_secret.encode(),
         f"{ts}\n{nonce}\n{hashlib.sha256(body).hexdigest()}".encode(),
@@ -48,9 +52,22 @@ def _verify(request: Request, body: bytes) -> tuple[bool, str]:
     return True, ""
 
 
+CALLBACK_MAX_BODY = 1 * 1024 * 1024  # 1MB：协议载荷上限，防未认证内存 DoS
+
+
 @router.post("/api/external/callback")
 async def external_callback(request: Request):
-    body = await request.body()
+    length = request.headers.get("Content-Length", "")
+    if length.isdigit() and int(length) > CALLBACK_MAX_BODY:
+        return _error("payload_too_large")
+    chunks: list[bytes] = []
+    received = 0
+    async for chunk in request.stream():
+        received += len(chunk)
+        if received > CALLBACK_MAX_BODY:
+            return _error("payload_too_large")
+        chunks.append(chunk)
+    body = b"".join(chunks)
     ok, reason = _verify(request, body)
     if not ok:
         return _error(reason)
@@ -105,4 +122,6 @@ def _normalize_delivery(data: dict) -> dict | None:
 def _error(reason: str):
     from fastapi.responses import JSONResponse
     status = 401 if reason in ("missing_headers", "timestamp_skew", "bad_signature", "nonce_replayed") else 400
+    if reason == "payload_too_large":
+        status = 413
     return JSONResponse({"error_code": reason, "message": reason}, status_code=status)

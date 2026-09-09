@@ -28,7 +28,10 @@ async def login(body: LoginRequest):
 async def _code_to_openid(code: str) -> str:
     """微信凭证为空 → mock 模式（仅开发期）；否则走 jscode2session。"""
     if config_mod.config.wx_mock_mode:
-        return mock_openid(code)
+        try:
+            return mock_openid(code)
+        except ValueError:
+            raise HTTPException(status_code=422, detail="invalid_code")
     try:
         async with httpx.AsyncClient(timeout=10) as client:
             resp = await client.get(

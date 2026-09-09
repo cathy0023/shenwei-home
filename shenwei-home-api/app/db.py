@@ -5,10 +5,11 @@ import time
 from contextlib import contextmanager
 from pathlib import Path
 
-from .config import config
+from . import config as config_mod
 
 _mutex = threading.Lock()
 _conn: sqlite3.Connection | None = None
+_conn_key: str | None = None  # 当前连接对应的 sqlite_path（测试替换单例后自动重建）
 
 
 def write_lock() -> threading.Lock:
@@ -29,14 +30,30 @@ def execute_write():
             raise
 
 
+def reset_for_tests() -> None:
+    """测试专用：关闭并丢弃缓存连接，使新 sqlite_path 生效（隔离各用例 DB）。"""
+    global _conn, _conn_key
+    with _mutex:
+        if _conn is not None:
+            _conn.close()
+        _conn = None
+        _conn_key = None
+
+
 def get_conn() -> sqlite3.Connection:
-    global _conn
+    global _conn, _conn_key
+    path = config_mod.config.sqlite_path
+    if _conn is not None and _conn_key != path:
+        # 配置被测试替换（dataclasses.replace）→ 旧连接作废
+        _conn.close()
+        _conn = None
     if _conn is None:
-        path = Path(config.sqlite_path)
-        if str(path) != ":memory:":
-            path.parent.mkdir(parents=True, exist_ok=True)
+        _conn_key = path
+        p = Path(path)
+        if str(p) != ":memory:":
+            p.parent.mkdir(parents=True, exist_ok=True)
         # FastAPI/Starlette 跨线程访问（TestClient 亦然），并发写由全局 _mutex 串行化
-        _conn = sqlite3.connect(str(path), check_same_thread=False)
+        _conn = sqlite3.connect(str(p), check_same_thread=False)
         _conn.row_factory = sqlite3.Row
         _conn.execute("PRAGMA journal_mode=WAL")
         _conn.execute("PRAGMA synchronous=NORMAL")

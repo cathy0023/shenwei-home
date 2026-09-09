@@ -88,6 +88,14 @@ def test_poll_incremental(client):
     assert "回复r1" not in texts2 and "回复r2" not in texts2
 
 
+def test_poll_excludes_user_messages(client):
+    """P0 回归：poll 只下发 assistant/system，不含用户消息（防前端 temp 气泡重复）。"""
+    client.post("/api/messages/send", json={"content": "我自己说的话"})
+    items = client.get("/api/messages/poll").json()["items"]
+    roles = {i["role"] for i in items}
+    assert "user" not in roles
+
+
 def test_poll_rejects_non_number_since(client):
     # FastAPI 类型层把非整数 since 拦为 422（框架标准语义）
     resp = client.get("/api/messages/poll?since=abc")

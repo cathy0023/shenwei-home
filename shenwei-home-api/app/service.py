@@ -7,6 +7,8 @@ import json
 import logging
 import uuid
 
+import httpx
+
 from .channel_client import UpstreamError, channel_client
 from . import config as config_mod
 from .db import execute_write, get_conn, now_ms
@@ -17,6 +19,7 @@ IMAGE_PLACEHOLDER = "[用户发送了图片]"
 MAX_CONTENT_LEN = 2000
 LIST_DEFAULT_LIMIT = 20
 LIST_MAX_LIMIT = 50
+SEND_FORWARD_TIMEOUT_S = 25.0  # 请求路径内联转发的总超时（wx.request 默认 60s 内返回）
 
 
 def insert_message(*, conversation_key: str, external_user_id: str, role: str,
@@ -91,13 +94,18 @@ async def transfer_to_human(*, openid: str, event_type: str) -> dict:
 
 
 async def _forward(**kwargs) -> str:
-    """转发 inbox；channel 关闭视为 accepted（AC8 降级）；异常转 failed 不抛出。"""
+    """转发 inbox；channel 关闭视为 accepted（AC8 降级）；异常转 failed 不抛出。
+
+    请求路径内联转发但设总超时（SEND_FORWARD_TIMEOUT_S），防止外部 5xx
+    退避（最长 21min）挂死用户请求；超时按 failed 落库，前端可重试。
+    """
     if not config_mod.config.channel_enabled:
         return "accepted"
     try:
-        result = await channel_client.forward_inbox(**kwargs)
+        result = await asyncio.wait_for(
+            channel_client.forward_inbox(**kwargs), timeout=SEND_FORWARD_TIMEOUT_S)
         return "accepted" if result in ("accepted", "duplicated") else "failed"
-    except (UpstreamError, asyncio.TimeoutError) as exc:
+    except (UpstreamError, asyncio.TimeoutError, httpx.HTTPError) as exc:
         logger.error("inbox 转发失败 external_msg_id=%s err=%s",
                      kwargs.get("external_msg_id"), exc)
         return "failed"
@@ -133,7 +141,11 @@ def list_messages(*, openid: str, cursor: str | None, limit: int | None) -> dict
 
 
 def poll_messages(*, openid: str, since: int | None, limit: int | None) -> dict:
-    """增量拉新（messages + deliveries 按 created_at ASC）；since 为上次 max(created_at)。"""
+    """增量拉新（deliveries + 本地 system 提示，按 created_at ASC）；since 为上次 max(created_at)。
+
+    RFC 5.4 语义：poll 只下发外部投递 + system 提示，不含用户自己的消息
+    （用户消息由 send 响应确认，避免前端 temp 气泡与轮询重复）。
+    """
     if limit is None:
         limit = LIST_DEFAULT_LIMIT
     limit = max(1, min(limit, LIST_MAX_LIMIT))
@@ -142,7 +154,7 @@ def poll_messages(*, openid: str, since: int | None, limit: int | None) -> dict:
 
     msg_rows = get_conn().execute(
         "SELECT id, role, msg_type, content, status, created_at FROM messages "
-        "WHERE conversation_key = ? AND created_at > ? "
+        "WHERE conversation_key = ? AND role = 'system' AND created_at > ? "
         "ORDER BY created_at ASC, id ASC LIMIT ?",
         (openid, since or 0, limit)).fetchall()
     dlv_rows = get_conn().execute(
