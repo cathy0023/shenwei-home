@@ -1,0 +1,25 @@
+/** 全局样式：与 design/preview.html @v0.1 对齐的设计变量。 */
+page {
+  --teal-400: #2DD4C8;
+  --teal-500: #14B8A6;
+  --teal-600: #0D9488;
+  --deep-700: #0B6477;
+  --deep-800: #084A5C;
+  --cyan-glow: #5EEAD4;
+  --ink: #17323F;
+  --ink-soft: #5B7280;
+  --bg: #F4F9F9;
+  --card: #FFFFFF;
+  --shadow-soft: 0 8rpx 24rpx rgba(11, 100, 119, 0.10);
+  --radius-lg: 22px;
+  font-family: 'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 30rpx;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}

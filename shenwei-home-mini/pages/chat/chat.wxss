@@ -1,0 +1,270 @@
+/* 聊天页样式：对齐 design/preview.html @v0.1（深青渐变 + 圆角气泡）。 */
+.chat-scroll {
+  flex: 1;
+  height: 0;
+  padding: 0 24rpx;
+  background: linear-gradient(180deg, #CDEFEA 0%, #E7F6F4 480rpx, rgba(231, 246, 244, 0) 840rpx);
+  box-sizing: border-box;
+}
+
+.pull-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24rpx;
+  margin: 12rpx 0 28rpx;
+  color: #9AB5BE;
+  font-size: 24rpx;
+  letter-spacing: 0.08em;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  border-radius: var(--radius-lg);
+  padding: 52rpx 44rpx 64rpx;
+  background:
+    radial-gradient(680rpx 400rpx at 88% -20%, rgba(94, 234, 212, 0.55), transparent 60%),
+    radial-gradient(600rpx 440rpx at -10% 120%, rgba(14, 165, 233, 0.35), transparent 55%),
+    linear-gradient(150deg, #0E7D8F 0%, #12A5A5 55%, #2CC7B4 100%);
+  color: #fff;
+  overflow: hidden;
+  margin-bottom: 32rpx;
+  box-shadow: 0 16rpx 40rpx rgba(11, 100, 119, 0.16);
+}
+.hero-hello {
+  font-weight: 900;
+  font-size: 76rpx;
+  line-height: 1.05;
+  background: linear-gradient(100deg, #B9F7EE 10%, #7DE9FF 90%);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.hero-sub {
+  margin-top: 16rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #E8FBF8;
+}
+.hero-sub .hl {
+  color: #FFE5A3;
+  border-bottom: 4rpx solid rgba(255, 229, 163, 0.6);
+  padding-bottom: 2rpx;
+}
+.mascot {
+  position: absolute;
+  right: 12rpx;
+  bottom: -16rpx;
+  width: 240rpx;
+  height: 270rpx;
+}
+
+/* ---------- 推荐问题 ---------- */
+.suggest {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 36rpx 36rpx 16rpx;
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 36rpx;
+}
+.suggest-title {
+  font-size: 26rpx;
+  color: var(--ink-soft);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 12rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.suggest-title::before {
+  content: '';
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: var(--teal-500);
+  box-shadow: 0 0 0 6rpx rgba(20, 184, 166, 0.18);
+}
+.suggest-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 26rpx 8rpx;
+  border-bottom: 1rpx solid #EFF4F5;
+  font-size: 30rpx;
+  color: var(--ink);
+}
+.suggest-item:last-child { border-bottom: none; }
+.suggest-item .sparkle { color: var(--teal-500); }
+.suggest-item .suggest-text { flex: 1; }
+.suggest-item .chev { color: #C3D4D9; font-size: 34rpx; }
+.suggest-item:active { background: #E4F6F3; }
+
+/* ---------- 消息气泡 ---------- */
+.msg { margin: 28rpx 0; }
+.msg.user .msg-row { flex-direction: row-reverse; }
+.msg-row { display: flex; gap: 20rpx; align-items: flex-start; }
+.avatar {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #E9FDFA, #C9F3EC);
+  box-shadow: 0 4rpx 10rpx rgba(11, 100, 119, 0.15);
+  flex-shrink: 0;
+}
+.bubble {
+  max-width: 72%;
+  padding: 24rpx 30rpx;
+  border-radius: 36rpx;
+  font-size: 30rpx;
+  line-height: 1.65;
+  background: var(--card);
+  box-shadow: var(--shadow-soft);
+  border-top-left-radius: 12rpx;
+  word-break: break-all;
+  position: relative;
+}
+.bubble.mine {
+  background: linear-gradient(135deg, #14B8A6, #0EA5E9);
+  color: #fff;
+  border-top-left-radius: 36rpx;
+  border-top-right-radius: 12rpx;
+  box-shadow: 0 8rpx 20rpx rgba(14, 165, 233, 0.35);
+}
+.bubble .pic {
+  width: 100%;
+  border-radius: 24rpx;
+  display: block;
+}
+.fail-mark {
+  position: absolute;
+  top: -12rpx;
+  right: -12rpx;
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  background: #EF4444;
+  color: #fff;
+  font-size: 24rpx;
+  text-align: center;
+  line-height: 36rpx;
+}
+.sys-tip {
+  margin: 28rpx auto;
+  max-width: 80%;
+  text-align: center;
+  font-size: 25rpx;
+  color: var(--deep-700);
+  background: rgba(20, 184, 166, 0.10);
+  border: 1rpx dashed rgba(20, 184, 166, 0.4);
+  padding: 18rpx 28rpx;
+  border-radius: 28rpx;
+}
+
+.scroll-spacer { height: 24rpx; }
+
+/* ---------- 快捷操作条 ---------- */
+.quickbar {
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 32rpx 8rpx;
+}
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 18rpx 32rpx;
+  border-radius: 999rpx;
+  background: #fff;
+  border: 3rpx solid #D8EBEA;
+  color: var(--deep-700);
+  font-size: 27rpx;
+  font-weight: 600;
+  box-shadow: 0 3rpx 10rpx rgba(11, 100, 119, 0.06);
+}
+.chip:active { transform: scale(0.95); }
+.chip-done { border-color: var(--teal-500); color: var(--teal-600); background: #EFFCF9; }
+
+/* ---------- 输入区 ---------- */
+.inputzone { background: var(--bg); }
+.inputbar {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin: 16rpx 28rpx 20rpx;
+  background: #fff;
+  border-radius: 999rpx;
+  padding: 14rpx 16rpx 14rpx 12rpx;
+  box-shadow: 0 6rpx 22rpx rgba(11, 100, 119, 0.12);
+  border: 3rpx solid #E2EFEE;
+}
+.icon-btn {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7FA3AD;
+  flex-shrink: 0;
+  font-size: 40rpx;
+}
+.icon-btn.active { background: rgba(20, 184, 166, 0.14); color: var(--teal-600); }
+.icon-btn:active { transform: scale(0.88); }
+.input {
+  flex: 1;
+  font-size: 30rpx;
+  color: var(--ink);
+  min-width: 0;
+}
+.send-btn {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal-500), #0EA5E9);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  flex-shrink: 0;
+  box-shadow: 0 4rpx 12rpx rgba(20, 184, 166, 0.4);
+}
+.send-btn.disabled { opacity: 0.35; box-shadow: none; }
+.send-btn:active { transform: scale(0.9); }
+
+/* ---------- 表情面板 ---------- */
+.panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.32s ease;
+  background: #fff;
+}
+.panel.open { max-height: 440rpx; box-shadow: 0 -8rpx 30rpx rgba(11, 100, 119, 0.10); }
+.emoji-grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 28rpx 36rpx 36rpx;
+}
+.emoji-cell {
+  width: 12.5%;
+  text-align: center;
+  font-size: 48rpx;
+  padding: 10rpx 0;
+  border-radius: 20rpx;
+}
+.emoji-cell:active { background: #EFF8F7; transform: scale(1.25); }
+
+.home-indicator {
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home-indicator::after {
+  content: '';
+  width: 260rpx;
+  height: 10rpx;
+  border-radius: 6rpx;
+  background: #C9DADD;
+}

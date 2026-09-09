@@ -1,0 +1,112 @@
+<!-- 聊天主页面：hero + 推荐卡片 + 气泡流 + 快捷条 + 输入区 -->
+<scroll-view
+  class="chat-scroll"
+  scroll-y
+  refresher-enabled
+  refresher-triggered="{{false}}"
+  bindrefresherrefresh="loadEarlier"
+  scroll-into-view="{{scrollInto}}"
+>
+  <view class="pull-hint">下拉查看历史对话</view>
+
+  <!-- Hero 欢迎区（首条消息后隐藏） -->
+  <view class="hero" wx:if="{{welcomeVisible}}">
+    <view class="hero-hello">Hello :)</view>
+    <view class="hero-sub">我是<text class="hl">深维之家</text>咨询小助手</view>
+    <image class="mascot" src="/images/mascot.png" mode="aspectFit" />
+  </view>
+
+  <!-- 推荐问题卡片 -->
+  <view class="suggest" wx:if="{{welcomeVisible && suggestions.length}}">
+    <view class="suggest-title">你可以这样问我</view>
+    <view
+      class="suggest-item"
+      wx:for="{{suggestions}}"
+      wx:key="*this"
+      data-q="{{item}}"
+      bindtap="onSuggestTap"
+    >
+      <text class="sparkle">✦</text>
+      <text class="suggest-text">{{item}}</text>
+      <text class="chev">›</text>
+    </view>
+  </view>
+
+  <!-- 欢迎气泡 -->
+  <view class="msg" wx:if="{{!welcomeVisible}}">
+    <view class="msg-row">
+      <image class="avatar" src="/images/mascot.png" mode="aspectFit" />
+      <view class="bubble bot">
+        您好！我是深维之家咨询小助手，很高兴为您服务！请问有什么可以帮到您的呢？
+      </view>
+    </view>
+  </view>
+
+  <!-- 消息流 -->
+  <view class="msg {{item.isUser ? 'user' : ''}}" wx:for="{{messages}}" wx:key="id">
+    <!-- 系统提示 -->
+    <view class="sys-tip" wx:if="{{item.isSystem}}">{{item.content}}</view>
+
+    <!-- 用户 / 客服 气泡 -->
+    <view class="msg-row" wx:else>
+      <image class="avatar" wx:if="{{!item.isUser}}" src="/images/mascot.png" mode="aspectFit" />
+      <view class="bubble {{item.isUser ? 'mine' : 'bot'}}">
+        <image
+          wx:if="{{item.isImage}}"
+          class="pic"
+          src="{{item.picUrl}}"
+          mode="widthFix"
+          data-url="{{item.picUrl}}"
+          bindtap="onImagePreview"
+        />
+        <text wx:else>{{item.content}}</text>
+        <text class="fail-mark" wx:if="{{item.status === 'failed'}}">!</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="scroll-spacer" id="page-bottom"></view>
+</scroll-view>
+
+<!-- 快捷操作条：仅转人工 -->
+<view class="quickbar">
+  <view class="chip {{transferred ? 'chip-done' : ''}}" bindtap="onTransferTap">
+    <text class="chip-icon">🎧</text>
+    <text>{{transferred ? '已转人工' : '转人工'}}</text>
+  </view>
+</view>
+
+<!-- 输入区 -->
+<view class="inputzone">
+  <view class="inputbar">
+    <view class="icon-btn {{showImagePanel ? 'active' : ''}}" bindtap="toggleImagePanel">
+      <text class="icon-plus">＋</text>
+    </view>
+    <input
+      class="input"
+      value="{{inputText}}"
+      placeholder="有什么不懂的可以问我"
+      confirm-type="send"
+      bindinput="onInput"
+      bindconfirm="onSendTap"
+    />
+    <view class="icon-btn {{showEmojiPanel ? 'active' : ''}}" bindtap="toggleEmojiPanel">
+      <text class="icon-emoji">😊</text>
+    </view>
+    <view class="send-btn {{inputText ? '' : 'disabled'}}" bindtap="onSendTap">➤</view>
+  </view>
+
+  <!-- 表情面板 -->
+  <view class="panel {{showEmojiPanel ? 'open' : ''}}">
+    <view class="emoji-grid">
+      <view
+        class="emoji-cell"
+        wx:for="{{emojis}}"
+        wx:key="*this"
+        data-e="{{item}}"
+        bindtap="onEmojiTap"
+      >{{item}}</view>
+    </view>
+  </view>
+  <view class="home-indicator"></view>
+</view>
