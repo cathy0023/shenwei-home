@@ -1,0 +1,20 @@
+# systemd 单元：shenwei-home-api（demo 单进程 + TLS）
+# 安装: cp shenwei-home.service /etc/systemd/system/ && systemctl daemon-reload
+[Unit]
+Description=Shenwei Home API (mini program backend)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/shenwei-home-api
+ExecStart=/opt/shenwei-home-api/.venv/bin/python -m uvicorn app.main:app \
+  --host 0.0.0.0 --port 8443 \
+  --ssl-certfile /etc/letsencrypt/live/{{DOMAIN}}/fullchain.pem \
+  --ssl-keyfile /etc/letsencrypt/live/{{DOMAIN}}/privkey.pem
+Restart=always
+RestartSec=3
+EnvironmentFile=/opt/shenwei-home-api/.env
+
+[Install]
+WantedBy=multi-user.target
