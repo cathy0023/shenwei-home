@@ -1,0 +1,18 @@
+# harmonyOS workshop helpers
+AGENT.md
+CLAUDE.md
+.harness/
+.secrets-community/
+.env
+.env.local
+
+# per-worktree artifacts
+.rfc-active-worktree
+
+# 外部服务凭证（后端 .env 不入历史）
+shenwei-home-api/.env
+
+# build
+node_modules/
+dist/
+.DS_Store
