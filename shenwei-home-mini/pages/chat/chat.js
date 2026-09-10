@@ -19,7 +19,8 @@ Page({
     showImagePanel: false,
     sending: false,
     transferred: false,
-    welcomeVisible: true,  // 首条用户消息发出后隐藏 hero
+    welcomeVisible: true,  // 开场白气泡：仅无历史时显示；发消息后隐藏
+    showHero: true,        // 品牌区（Hero + 推荐问题）始终显示
   },
 
   pollTimer: null,
@@ -71,7 +72,7 @@ Page({
       const messages = res.items.map(this.toViewModel).reverse();
       this.setData({
         messages,
-        welcomeVisible: messages.length === 0,
+        welcomeVisible: messages.length === 0,  // 有历史则不再显示开场白
       });
       if (messages.length) {
         // 以最新一条的 created_at 初始化轮询游标，避免 poll 从 0 开始重放全量历史
@@ -254,6 +255,7 @@ Page({
   },
 
   hideWelcome() {
+    // 只隐藏开场白气泡；Hero/推荐问题保持常显（品牌区）
     if (this.data.welcomeVisible) this.setData({ welcomeVisible: false });
   },
 

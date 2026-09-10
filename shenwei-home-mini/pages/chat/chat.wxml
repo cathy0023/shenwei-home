@@ -12,14 +12,14 @@
   <view class="pull-hint">下拉查看历史对话</view>
 
   <!-- Hero 欢迎区（首条消息后隐藏） -->
-  <view class="hero" wx:if="{{welcomeVisible}}">
+  <view class="hero" wx:if="{{showHero}}">
     <view class="hero-hello">Hello :)</view>
     <view class="hero-sub">我是<text class="hl">深维之家</text>咨询小助手</view>
     <image class="mascot" src="/images/mascot.png" mode="aspectFit" />
   </view>
 
   <!-- 推荐问题卡片 -->
-  <view class="suggest" wx:if="{{welcomeVisible && suggestions.length}}">
+  <view class="suggest" wx:if="{{suggestions.length}}">
     <view class="suggest-title">你可以这样问我</view>
     <view
       class="suggest-item"
@@ -35,7 +35,8 @@
   </view>
 
   <!-- 欢迎气泡 -->
-  <view class="msg" wx:if="{{!welcomeVisible}}">
+  <!-- 开场白气泡：仅首次使用（无历史）时显示 -->
+  <view class="msg" wx:if="{{welcomeVisible}}">
     <view class="msg-row">
       <image class="avatar" src="/images/mascot.png" mode="aspectFit" />
       <view class="bubble bot">
