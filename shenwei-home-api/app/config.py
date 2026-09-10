@@ -55,6 +55,14 @@ class Config:
     uploads_dir: str = field(
         default_factory=lambda: os.getenv("SHM_UPLOADS_DIR", "uploads"))
 
+    # --- 媒体签名（图片公网访问端点）---
+    media_sign_key: str = field(
+        default_factory=lambda: os.getenv("MEDIA_SIGN_KEY", ""))
+    public_base_url: str = field(
+        default_factory=lambda: os.getenv("PUBLIC_BASE_URL", ""))
+    media_url_ttl_days: int = field(
+        default_factory=lambda: int(os.getenv("SHM_MEDIA_TTL_DAYS", "7")))
+
     # --- 会话 ---
     session_ttl_days: int = field(
         default_factory=lambda: int(os.getenv("SHM_SESSION_TTL_DAYS", "7")))
@@ -68,6 +76,10 @@ class Config:
             missing.append("CHANNEL_APP_SECRET")
         if not self.channel_base_url:
             missing.append("CHANNEL_BASE_URL")
+        if not self.media_sign_key:
+            missing.append("MEDIA_SIGN_KEY")
+        if not self.public_base_url:
+            missing.append("PUBLIC_BASE_URL")
         return missing
 
     @property

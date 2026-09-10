@@ -61,15 +61,21 @@ async def send_user_message(*, openid: str, content: str) -> dict:
     return row
 
 
-async def send_user_image(*, openid: str, image_url: str) -> dict:
-    """图片消息：图片 URL 落库展示；外部只收占位文本。"""
+async def send_user_image(*, openid: str, name: str, media_url: str) -> dict:
+    """图片消息：相对路径落库展示；外部收「兜底文本 + media_url 结构化字段」。
+
+    media_url 为签名公网 URL（spec 2026-09-10 §3.1），外部按协议 4.2 voice
+    先例下载（他们不认字段时，文本里的 URL 仍可正则提取——双保险）。
+    """
+    rel = f"/uploads/{openid}/{name}"
     row = insert_message(
         conversation_key=openid, external_user_id=openid,
-        role="user", msg_type="image", content={"image_url": image_url})
+        role="user", msg_type="image", content={"image_url": rel})
     status = await _forward(
         external_msg_id=row["external_msg_id"], conversation_key=openid,
         external_user_id=openid, msg_type="text",
-        content={"content": IMAGE_PLACEHOLDER})
+        content={"content": f"{IMAGE_PLACEHOLDER} {media_url}",
+                 "media_url": media_url})
     update_message_status(row["external_msg_id"], status)
     row["status"] = status
     return row

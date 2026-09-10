@@ -54,11 +54,13 @@ def test_history_contains_ai_replies(client):
         _push_reply(conn, "dlv-r2", "回复2", q2_ts + 1000)
 
     items = client.get("/api/messages/list").json()["items"]
-    # list 返回 DESC（最新在前）；时间序 = q1, q2, 回复1, 回复2
+    # list 返回 DESC（最新在前）；时间序 = q1, q2, 回复1(q2+500ms), 回复2(q2+1000ms)
     texts = [i["content"].get("content") for i in items]
     roles = [i["role"] for i in items]
-    assert texts == ["回复2", "回复1", "q2", "q1"]
-    assert roles == ["assistant", "assistant", "user", "user"]
+    assert texts[:2] == ["回复2", "回复1"]
+    assert set(texts[2:]) == {"q1", "q2"}          # 两条 user 消息（同毫秒序不定）
+    assert roles[:2] == ["assistant", "assistant"]
+    assert set(roles[2:]) == {"user"}
 
 
 def test_history_pagination_across_tables(client):

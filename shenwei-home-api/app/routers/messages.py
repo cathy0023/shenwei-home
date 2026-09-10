@@ -97,12 +97,12 @@ async def upload_image(file: UploadFile, request: Request,
         return JSONResponse({"error_code": "storage_unavailable",
                              "message": "cannot write upload"}, status_code=507)
 
-    # 目录现已在磁盘上：补挂载静态路由（幂等）
-    request.app.state.mount_uploads(request.app)
+    # 签名公网 URL：下发前端展示 + 外发外部下载共用（spec 2026-09-10 §3.1）
+    from ..media import sign_media_url
 
-    image_url = f"/uploads/{openid}/{name}"
-    row = await send_user_image(openid=openid, image_url=image_url)
-    return {"id": row["id"], "msg_type": "image", "image_url": image_url,
+    media_url = sign_media_url(openid, name)
+    row = await send_user_image(openid=openid, name=name, media_url=media_url)
+    return {"id": row["id"], "msg_type": "image", "image_url": media_url,
             "status": row["status"], "created_at": row["created_at"]}
 
 

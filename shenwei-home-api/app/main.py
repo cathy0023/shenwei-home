@@ -31,6 +31,7 @@ def create_app() -> FastAPI:
         body["config_missing"] = config_mod.config.validate()
         return body
 
+    from .media import router as media_router
     from .routers.callback import router as callback_router
     from .routers.auth import router as auth_router
     from .routers.messages import router as messages_router
@@ -40,29 +41,9 @@ def create_app() -> FastAPI:
     app.include_router(auth_router)
     app.include_router(messages_router)
     app.include_router(suggestions_router)
-
-    # uploads 静态托管（图片回显）；目录不存在则跳过（首张上传时自建）
-    from pathlib import Path
-
-    from starlette.staticfiles import StaticFiles
-
-    uploads = Path(config_mod.config.uploads_dir)
-    if uploads.is_dir():
-        app.mount("/uploads", StaticFiles(directory=str(uploads)), name="uploads")
-    app.state.mount_uploads = _ensure_uploads_mount  # 延迟挂载钩子（见下）
+    app.include_router(media_router)
+    # 注意：/uploads 公开静态挂载已移除——图片唯一入口是签名端点 /api/media/*
     return app
-
-
-def _ensure_uploads_mount(app: FastAPI) -> None:
-    """uploads 目录在首图落盘后才存在；路由层上传后调用此钩子补挂载。"""
-    from pathlib import Path
-
-    from starlette.staticfiles import StaticFiles
-
-    uploads = Path(config_mod.config.uploads_dir)
-    already = any(getattr(r, "path", "") == "/uploads" for r in app.router.routes)
-    if uploads.is_dir() and not already:
-        app.mount("/uploads", StaticFiles(directory=str(uploads)), name="uploads")
 
 
 app = create_app()

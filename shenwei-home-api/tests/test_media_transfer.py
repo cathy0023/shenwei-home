@@ -16,9 +16,17 @@ def client(tmp_path, monkeypatch):
     import dataclasses
 
     from app import config as config_mod
+    from app import db as db_mod
 
-    test_cfg = dataclasses.replace(config_mod.config, channel_enabled=False)
+    test_cfg = dataclasses.replace(
+        config_mod.config,
+        channel_enabled=False,
+        sqlite_path=str(tmp_path / "t.db"),
+        uploads_dir=str(tmp_path / "uploads"),
+        media_sign_key="media_test_secret",
+        public_base_url="http://testserver")
     monkeypatch.setattr(config_mod, "config", test_cfg)
+    db_mod.reset_for_tests()
     from app.main import create_app
 
     c = TestClient(create_app())
@@ -39,7 +47,8 @@ def test_image_upload_ok(client):
     assert resp.status_code == 200
     body = resp.json()
     assert body["msg_type"] == "image"
-    assert body["image_url"].startswith("/uploads/")
+    # 本期改为返回签名公网 URL（spec 2026-09-10 §3.1）
+    assert body["image_url"].startswith("http://testserver/api/media/")
     # 落库可见
     items = client.get("/api/messages/list").json()["items"]
     assert any(i["msg_type"] == "image" for i in items)
@@ -61,10 +70,13 @@ def test_image_rejects_too_large(client, monkeypatch):
 
 
 def test_image_served_back(client):
+    from urllib.parse import urlparse
+
     up = client.post(
         "/api/messages/image",
         files={"file": ("a.png", io.BytesIO(_png()), "image/png")}).json()
-    static = client.get(up["image_url"])
+    parsed = urlparse(up["image_url"])
+    static = client.get(f"{parsed.path}?{parsed.query}")
     assert static.status_code == 200
     assert static.content.startswith(b"\x89PNG")
 
