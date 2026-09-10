@@ -155,8 +155,11 @@ Page({
         id: tempId, role: 'user', isUser: true, isSystem: false, isImage: true,
         content: '', picUrl: filePath, status: 'pending',
       });
-        const res = await api.uploadImage(this.baseUrl, this.token, filePath);
-      this.updateLocalStatus(tempId, res.status);
+      const res = await api.uploadImage(this.baseUrl, this.token, filePath);
+      // 本地 tmp 路径易失（工具/系统会清理）：上传成功后换成本服务器签名 URL
+      const messages = this.data.messages.map((m) =>
+        m.id === tempId ? { ...m, status: res.status, picUrl: res.image_url } : m);
+      this.setData({ messages });
       wx.showToast({ title: '图片已发送', icon: 'none' });
     } catch (err) {
       if (err && err.errMsg && err.errMsg.includes('cancel')) return;
