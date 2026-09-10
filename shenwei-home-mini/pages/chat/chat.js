@@ -109,6 +109,7 @@ Page({
       isUser: item.role === 'user',
       isSystem: item.role === 'system',
       isImage: item.msg_type === 'image',
+      isHuman: item.kind === 'boss_reply',  // 人工回复（外部 kind 透传）
       content: item.content.content || '',
       picUrl: item.content.image_url ? `${getApp().globalData.baseUrl}${item.content.image_url}` : '',
       status: item.status,
@@ -218,6 +219,10 @@ Page({
         if (fresh.length) {
           this.setData({ messages: [...this.data.messages, ...fresh] });
           this.scrollToBottom();
+        }
+        // 收到人工回复 → 转人工 chip 联动为「人工服务中」
+        if (fresh.some((m) => m.isHuman) && !this.data.transferred) {
+          this.setData({ transferred: true });
         }
         this.lastSince = res.next_since;
         this.pollInterval = POLL_FAST_MS;
