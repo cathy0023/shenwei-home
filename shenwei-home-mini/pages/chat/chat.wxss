@@ -340,50 +340,15 @@
   border-top-right-radius: 12rpx;
   box-shadow: 0 8rpx 20rpx rgba(14, 165, 233, 0.35);
 }
-/* 人工客服头像：同款浅底 + 琥珀线稿人形（空心，轻盈不闷） */
+/* 人工客服头像：同款浅底 + 琥珀人形图标（SVG path 经 CSS mask 渲染，小程序不直接支持内联 svg） */
 .human-mini {
-  position: relative;
   width: 40rpx;
   height: 40rpx;
-}
-/* 空心圆头：琥珀描边 */
-.human-head {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 17rpx;
-  height: 17rpx;
-  border-radius: 50%;
-  border: 3.5rpx solid #F0B429;
-  background: transparent;
-  box-sizing: border-box;
-}
-/* 肩部弧线：只有上半圈描边，下缘开放，与头衔接 */
-.human-body {
-  position: absolute;
-  top: 21rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 32rpx;
-  height: 19rpx;
-  border-radius: 16rpx 16rpx 0 0;
-  border: 3.5rpx solid #F0B429;
-  border-bottom: none;
-  background: transparent;
-  box-sizing: border-box;
-}
-/* 头内点缀：实心小圆脸心，呼应机器人面罩内的亮点 */
-.human-head::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 5rpx;
-  height: 5rpx;
-  border-radius: 50%;
   background: #F0B429;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M4 22C4 17.5817 7.58172 14 12 14C16.4183 14 20 17.5817 20 22H18C18 18.6863 15.3137 16 12 16C8.68629 16 6 18.6863 6 22H4ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11Z'/></svg>");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
 }
 
 /* 人工回复：气泡右上角迷你金标（轻量区分，气泡本体不变） */

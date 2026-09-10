@@ -78,10 +78,7 @@
     <view class="msg-row" wx:else>
       <view class="avatar" wx:if="{{!item.isUser}}">
         <!-- 人工：人形徽章；AI：机器人小脸 -->
-        <view class="human-mini" wx:if="{{item.isHuman}}">
-          <view class="human-head"></view>
-          <view class="human-body"></view>
-        </view>
+        <view class="human-mini" wx:if="{{item.isHuman}}"></view>
         <view class="bot-mini" wx:else>
           <view class="bot-mini-visor">
             <view class="bot-mini-eye left"></view>
