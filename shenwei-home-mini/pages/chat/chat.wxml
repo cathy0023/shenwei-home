@@ -4,12 +4,9 @@
 <scroll-view
   class="chat-scroll"
   scroll-y
-  refresher-enabled
-  refresher-triggered="{{false}}"
-  bindrefresherrefresh="loadEarlier"
   scroll-into-view="{{scrollInto}}"
 >
-  <view class="pull-hint">下拉查看历史对话</view>
+  <view class="pull-hint">深维之家 · 智能客服</view>
 
   <!-- Hero 欢迎区（品牌区常显） -->
   <view class="hero" wx:if="{{showHero}}">

@@ -87,21 +87,6 @@ Page({
     }
   },
 
-  /** 下拉加载更早历史。 */
-  async loadEarlier() {
-    const first = this.data.messages.find((m) => !String(m.id).startsWith('temp-'));
-    if (!first) return;
-    try {
-      const res = await api.list(this.baseUrl, this.token, first.id);
-      if (res.items.length) {
-        // DESC 批次反转成 ASC 后前插
-        const earlier = res.items.map(this.toViewModel).reverse();
-        this.setData({ messages: [...earlier, ...this.data.messages] });
-      }
-    } catch (err) {
-      wx.showToast({ title: '历史加载失败', icon: 'none' });
-    }
-  },
 
   toViewModel(item) {
     return {
