@@ -8,7 +8,7 @@ page {
   --cyan-glow: #5EEAD4;
   --ink: #17323F;
   --ink-soft: #5B7280;
-  --bg: #F4F9F9;
+  --bg: #DFEDEE;
   --card: #FFFFFF;
   --shadow-soft: 0 8rpx 24rpx rgba(11, 100, 119, 0.10);
   --radius-lg: 22px;

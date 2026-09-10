@@ -3,7 +3,7 @@
   flex: 1;
   height: 0;
   padding: 0 24rpx;
-  background: linear-gradient(180deg, #CDEFEA 0%, #E7F6F4 480rpx, rgba(231, 246, 244, 0) 840rpx);
+  background: linear-gradient(180deg, #BEDFD9 0%, #DCEEEA 480rpx, rgba(220, 238, 234, 0) 840rpx);
   box-sizing: border-box;
 }
 
