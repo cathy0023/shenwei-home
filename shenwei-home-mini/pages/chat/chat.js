@@ -97,7 +97,11 @@ Page({
       isImage: item.msg_type === 'image',
       isHuman: item.kind === 'boss_reply',  // 人工回复（外部 kind 透传）
       content: item.content.content || '',
-      picUrl: item.content.image_url ? `${getApp().globalData.baseUrl}${item.content.image_url}` : '',
+      picUrl: item.content.image_url
+        ? (item.content.image_url.startsWith('http')
+            ? item.content.image_url  // 已是签名绝对 URL（本期起）
+            : `${getApp().globalData.baseUrl}${item.content.image_url}`)  // 兼容历史相对路径
+        : '',
       status: item.status,
     };
   },
