@@ -16,10 +16,11 @@
     <view class="hero-hello">Hello :)</view>
     <view class="hero-sub">我是<text class="hl">深维之家</text>咨询小助手</view>
 
-    <!-- 纯元素机器人：白头盔 + 青面罩笑脸 + 耳机 + 天线 -->
+    <!-- 纯元素机器人：白头盔 + 头戴耳机 + 青面罩笑脸 + 天线 -->
     <view class="mascot-css">
       <view class="bot-antenna"></view>
       <view class="bot-head">
+        <view class="bot-band"></view>
         <view class="bot-ear left"></view>
         <view class="bot-ear right"></view>
         <view class="bot-visor">

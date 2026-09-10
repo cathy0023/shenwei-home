@@ -99,25 +99,52 @@
   border-radius: 50rpx;
   box-shadow: 0 10rpx 24rpx rgba(8, 74, 92, 0.25);
 }
+/* 耳机：头带弧 + 双层圆形耳罩 */
+.bot-band {
+  position: absolute;
+  top: -8rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 170rpx;
+  height: 96rpx;
+  border: 12rpx solid #0B6477;
+  border-bottom: none;
+  border-radius: 96rpx 96rpx 0 0;
+}
 .bot-ear {
   position: absolute;
-  top: 40rpx;
-  width: 22rpx;
-  height: 44rpx;
-  border-radius: 10rpx;
+  top: 44rpx;
+  width: 34rpx;
+  height: 46rpx;
+  border-radius: 16rpx;
   background: #0B6477;
+  box-shadow: inset 0 -4rpx 8rpx rgba(0, 0, 0, 0.2), 0 4rpx 10rpx rgba(8, 74, 92, 0.3);
 }
-.bot-ear.left { left: -10rpx; }
-.bot-ear.right { right: -10rpx; }
+.bot-ear.left { left: -18rpx; }
+.bot-ear.right { right: -18rpx; }
+/* 耳罩内芯：薄荷绿椭圆 + 顶部高光 */
 .bot-ear::after {
   content: '';
   position: absolute;
-  top: 10rpx;
-  left: 5rpx;
-  width: 12rpx;
-  height: 24rpx;
-  border-radius: 6rpx;
+  top: 8rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18rpx;
+  height: 28rpx;
+  border-radius: 9rpx;
   background: #5EEAD4;
+}
+.bot-ear::before {
+  content: '';
+  position: absolute;
+  top: 4rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  z-index: 1;
 }
 .bot-visor {
   position: absolute;
