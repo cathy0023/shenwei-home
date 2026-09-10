@@ -366,7 +366,9 @@
   box-shadow: 0 2rpx 6rpx rgba(245, 194, 66, 0.35);
 }
 .bubble .pic {
-  width: 100%;
+  /* widthFix 需要非零基准宽：气泡由内容撑开，图片未加载时 100% 会解析为 0 → 永不渲染 */
+  width: 360rpx;
+  max-width: 100%;
   border-radius: 24rpx;
   display: block;
 }
