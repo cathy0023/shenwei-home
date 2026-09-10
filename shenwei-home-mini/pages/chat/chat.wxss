@@ -2,7 +2,7 @@
 .chat-scroll {
   flex: 1;
   height: 0;
-  padding: 0 24rpx;
+  padding: 24rpx 24rpx 0;
   background: linear-gradient(180deg, #BEDFD9 0%, #DCEEEA 480rpx, rgba(220, 238, 234, 0) 840rpx);
   box-sizing: border-box;
 }

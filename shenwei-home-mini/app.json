@@ -3,7 +3,7 @@
     "pages/chat/chat"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#CFE6E6",
+    "navigationBarBackgroundColor": "#BEDFD9",
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "深维之家",
     "backgroundColor": "#DFEDEE",
