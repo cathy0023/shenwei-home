@@ -170,3 +170,23 @@ def test_uploads_static_route_removed(client):
     """公开 /uploads 挂载已移除：裸访问应 404（而非直接读文件）。"""
     resp = client.get("/uploads/mock_u1/whatever.png")
     assert resp.status_code == 404
+
+
+def test_list_poll_rewrite_image_url_to_signed(client):
+    """下发出口（list/poll）必须把库内相对路径重写为签名公网 URL。"""
+    client.post(
+        "/api/messages/image",
+        files={"file": ("a.png", io.BytesIO(_png()), "image/png")}).json()
+
+    list_items = client.get("/api/messages/list").json()["items"]
+    imgs = [i for i in list_items if i["msg_type"] == "image"]
+    assert imgs, "list 应含图片消息"
+    url = imgs[0]["content"]["image_url"]
+    assert url.startswith("http://testserver/api/media/"), url
+    assert "/uploads/" not in url  # 相对路径绝不能裸下发
+
+    poll_items = client.get("/api/messages/poll").json()["items"]
+    imgs_p = [i for i in poll_items if i["msg_type"] == "image"]
+    # poll 只下发 system 提示 + 投递；用户图片消息经 list 下发，若出现在 poll 亦应重写
+    for i in imgs_p:
+        assert i["content"]["image_url"].startswith("http://testserver/api/media/")

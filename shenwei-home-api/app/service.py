@@ -22,6 +22,16 @@ LIST_MAX_LIMIT = 50
 SEND_FORWARD_TIMEOUT_S = 25.0  # 请求路径内联转发的总超时（wx.request 默认 60s 内返回）
 
 
+def _egress_content(openid: str, content: dict) -> dict:
+    """下发出口：库内相对路径 image_url → 签名公网 URL（spec §4 出口单点拼装）。"""
+    url = content.get("image_url")
+    if url and url.startswith("/uploads/"):
+        from .media import sign_media_url
+
+        content = {**content, "image_url": sign_media_url(openid, url.rstrip("/").split("/")[-1])}
+    return content
+
+
 def insert_message(*, conversation_key: str, external_user_id: str, role: str,
                    msg_type: str, content: dict, status: str = "pending",
                    external_msg_id: str | None = None) -> dict:
@@ -163,6 +173,9 @@ def list_messages(*, openid: str, cursor: str | None, limit: int | None) -> dict
         [_row_to_item(r) for r in msg_rows] + [_delivery_to_item(r) for r in dlv_rows],
         key=lambda i: (i["created_at"], i["id"]),
         reverse=True)
+    # 出口转换：相对路径 image_url → 签名公网 URL（spec §4）
+    merged = [{**i, "content": _egress_content(openid, i["content"])} if i["msg_type"] == "image" else i
+              for i in merged]
     has_more = len(merged) > limit
     page = merged[:limit]
     return {
@@ -219,6 +232,9 @@ def poll_messages(*, openid: str, since: int | None, limit: int | None) -> dict:
         })
     items.sort(key=lambda i: i["created_at"])
     items = items[:limit]
+    # 出口转换：相对路径 image_url → 签名公网 URL（spec §4）
+    items = [{**i, "content": _egress_content(openid, i["content"])} if i["msg_type"] == "image" else i
+             for i in items]
     max_ts = max((i["created_at"] for i in items), default=since or 0)
     return {"items": items, "next_since": max_ts, "has_more": len(items) == limit}
 
