@@ -274,4 +274,12 @@ Page({
   onImagePreview(e) {
     wx.previewImage({ urls: [e.currentTarget.dataset.url] });
   },
+
+  /** 图片加载失败（过期/网络/404）：切换为占位块。 */
+  onPicError(e) {
+    const failedUrl = e.currentTarget.dataset.url || e.target.dataset.url;
+    const messages = this.data.messages.map((m) =>
+      m.picUrl === failedUrl && m.isImage ? { ...m, picBroken: true } : m);
+    this.setData({ messages });
+  },
 });

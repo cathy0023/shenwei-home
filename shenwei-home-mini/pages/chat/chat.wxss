@@ -372,6 +372,35 @@
   border-radius: 24rpx;
   display: block;
 }
+/* 图片消息气泡：裸展示——去内边距/背景/阴影，不叠加任何视觉效果 */
+.pic-bubble {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+/* 图片加载失败占位 */
+.pic-fallback {
+  width: 360rpx;
+  max-width: 100%;
+  height: 220rpx;
+  border-radius: 24rpx;
+  background: #EEF4F5;
+  border: 2rpx dashed #C9DADD;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+}
+.pic-fallback-icon {
+  font-size: 44rpx;
+  opacity: 0.55;
+}
+.pic-fallback-text {
+  font-size: 22rpx;
+  color: #9AB5BE;
+}
 .fail-mark {
   position: absolute;
   top: -12rpx;

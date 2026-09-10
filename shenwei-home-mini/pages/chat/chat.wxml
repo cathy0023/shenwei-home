@@ -84,17 +84,25 @@
           </view>
         </view>
       </view>
-      <view class="bubble {{item.isUser ? 'mine' : 'bot'}}">
+      <view class="bubble {{item.isUser ? 'mine' : 'bot'}} {{item.isImage ? 'pic-bubble' : ''}}">
         <!-- 人工回复：右上角金色迷你标签 -->
         <view class="human-corner-tag" wx:if="{{item.isHuman}}">人工</view>
-        <image
-          wx:if="{{item.isImage}}"
-          class="pic"
-          src="{{item.picUrl}}"
-          mode="widthFix"
-          data-url="{{item.picUrl}}"
-          bindtap="onImagePreview"
-        />
+        <block wx:if="{{item.isImage}}">
+          <!-- 加载失败/过期占位 -->
+          <view class="pic-fallback" wx:if="{{item.picBroken}}">
+            <view class="pic-fallback-icon">🖼</view>
+            <view class="pic-fallback-text">图片加载失败</view>
+          </view>
+          <image
+            wx:else
+            class="pic"
+            src="{{item.picUrl}}"
+            mode="widthFix"
+            data-url="{{item.picUrl}}"
+            binderror="onPicError"
+            bindtap="onImagePreview"
+          />
+        </block>
         <text wx:else>{{item.content}}</text>
         <text class="fail-mark" wx:if="{{item.status === 'failed'}}">!</text>
       </view>
