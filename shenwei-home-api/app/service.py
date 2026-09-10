@@ -148,7 +148,7 @@ def list_messages(*, openid: str, cursor: str | None, limit: int | None) -> dict
         f"ORDER BY created_at DESC, id DESC LIMIT ?",
         (openid, *msg_params, limit + 1)).fetchall()
     dlv_rows = conn.execute(
-        "SELECT delivery_id AS id, 'assistant' AS role, msg_type, content, '' AS status, created_at "
+        "SELECT delivery_id AS id, 'assistant' AS role, kind, msg_type, content, '' AS status, created_at "
         f"FROM deliveries WHERE conversation_key = ? {dlv_cond} "
         "ORDER BY created_at DESC, delivery_id DESC LIMIT ?",
         (openid, *dlv_params, limit + 1)).fetchall()
@@ -170,6 +170,7 @@ def _delivery_to_item(r) -> dict:
     return {
         "id": r["id"],
         "role": r["role"],
+        "kind": r["kind"],  # ai_reply | boss_reply，前端据此渲染人工/AI 样式
         "msg_type": r["msg_type"],
         "content": json.loads(r["content"]),
         "status": r["status"] or "accepted",
