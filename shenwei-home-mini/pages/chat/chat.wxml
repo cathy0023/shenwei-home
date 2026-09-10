@@ -11,11 +11,27 @@
 >
   <view class="pull-hint">下拉查看历史对话</view>
 
-  <!-- Hero 欢迎区（首条消息后隐藏） -->
+  <!-- Hero 欢迎区（品牌区常显） -->
   <view class="hero" wx:if="{{showHero}}">
     <view class="hero-hello">Hello :)</view>
     <view class="hero-sub">我是<text class="hl">深维之家</text>咨询小助手</view>
-    <image class="mascot" src="/images/mascot.png" mode="aspectFit" />
+
+    <!-- 纯元素机器人：白头盔 + 青面罩笑脸 + 耳机 + 天线 -->
+    <view class="mascot-css">
+      <view class="bot-antenna"></view>
+      <view class="bot-head">
+        <view class="bot-ear left"></view>
+        <view class="bot-ear right"></view>
+        <view class="bot-visor">
+          <view class="bot-eye left"></view>
+          <view class="bot-eye right"></view>
+          <view class="bot-mouth"></view>
+        </view>
+      </view>
+      <view class="bot-body">
+        <view class="bot-chest"></view>
+      </view>
+    </view>
   </view>
 
   <!-- 推荐问题卡片 -->
@@ -34,11 +50,18 @@
     </view>
   </view>
 
-  <!-- 欢迎气泡 -->
-  <!-- 开场白气泡：仅首次使用（无历史）时显示 -->
+  <!-- 开场白气泡：品牌问候常显 -->
   <view class="msg" wx:if="{{welcomeVisible}}">
     <view class="msg-row">
-      <image class="avatar" src="/images/mascot.png" mode="aspectFit" />
+      <view class="avatar">
+        <view class="bot-mini">
+          <view class="bot-mini-visor">
+            <view class="bot-mini-eye left"></view>
+            <view class="bot-mini-eye right"></view>
+            <view class="bot-mini-mouth"></view>
+          </view>
+        </view>
+      </view>
       <view class="bubble bot">
         您好！我是深维之家咨询小助手，很高兴为您服务！请问有什么可以帮到您的呢？
       </view>
@@ -52,7 +75,15 @@
 
     <!-- 用户 / 客服 气泡 -->
     <view class="msg-row" wx:else>
-      <image class="avatar" wx:if="{{!item.isUser}}" src="/images/mascot.png" mode="aspectFit" />
+      <view class="avatar" wx:if="{{!item.isUser}}">
+        <view class="bot-mini">
+          <view class="bot-mini-visor">
+            <view class="bot-mini-eye left"></view>
+            <view class="bot-mini-eye right"></view>
+            <view class="bot-mini-mouth"></view>
+          </view>
+        </view>
+      </view>
       <view class="bubble {{item.isUser ? 'mine' : 'bot'}}">
         <image
           wx:if="{{item.isImage}}"

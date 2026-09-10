@@ -51,12 +51,193 @@
   border-bottom: 4rpx solid rgba(255, 229, 163, 0.6);
   padding-bottom: 2rpx;
 }
-.mascot {
+/* ---------- 纯元素机器人（Hero 大版 + 消息头像迷你版共用比例） ---------- */
+/* hero 版：1em = 10rpx；头像版：avatar 容器 font-size 决定缩放 */
+.mascot-css {
   position: absolute;
-  right: 12rpx;
-  bottom: -16rpx;
-  width: 240rpx;
-  height: 270rpx;
+  right: 20rpx;
+  bottom: 10rpx;
+  width: 220rpx;
+  height: 250rpx;
+  font-size: 10rpx;
+  animation: botFloat 3.6s ease-in-out infinite;
+}
+@keyframes botFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12rpx); }
+}
+.bot-antenna {
+  position: absolute;
+  top: -8rpx;
+  left: 50%;
+  margin-left: -2rpx;
+  width: 4rpx;
+  height: 24rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 2rpx;
+}
+.bot-antenna::after {
+  content: '';
+  position: absolute;
+  top: -12rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: #FFE5A3;
+  box-shadow: 0 0 8rpx rgba(255, 229, 163, 0.8);
+}
+.bot-head {
+  position: absolute;
+  top: 14rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150rpx;
+  height: 130rpx;
+  background: #FFFFFF;
+  border-radius: 50rpx;
+  box-shadow: 0 10rpx 24rpx rgba(8, 74, 92, 0.25);
+}
+.bot-ear {
+  position: absolute;
+  top: 40rpx;
+  width: 22rpx;
+  height: 44rpx;
+  border-radius: 10rpx;
+  background: #0B6477;
+}
+.bot-ear.left { left: -10rpx; }
+.bot-ear.right { right: -10rpx; }
+.bot-ear::after {
+  content: '';
+  position: absolute;
+  top: 10rpx;
+  left: 5rpx;
+  width: 12rpx;
+  height: 24rpx;
+  border-radius: 6rpx;
+  background: #5EEAD4;
+}
+.bot-visor {
+  position: absolute;
+  top: 26rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 112rpx;
+  height: 76rpx;
+  background: #0B6477;
+  border-radius: 34rpx;
+  overflow: hidden;
+}
+.bot-eye {
+  position: absolute;
+  top: 24rpx;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: #5EEAD4;
+}
+.bot-eye.left { left: 28rpx; }
+.bot-eye.right { right: 28rpx; }
+.bot-mouth {
+  position: absolute;
+  bottom: 16rpx;
+  left: 50%;
+  margin-left: -14rpx;
+  width: 28rpx;
+  height: 14rpx;
+  border: 4rpx solid #5EEAD4;
+  border-top: none;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-radius: 0 0 20rpx 20rpx;
+}
+.bot-body {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110rpx;
+  height: 90rpx;
+  background: #FFFFFF;
+  border-radius: 36rpx 36rpx 26rpx 26rpx;
+  box-shadow: 0 10rpx 24rpx rgba(8, 74, 92, 0.25);
+}
+.bot-chest {
+  position: absolute;
+  top: 20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56rpx;
+  height: 40rpx;
+  background: #D9F6F1;
+  border-radius: 14rpx;
+}
+.bot-chest::after {
+  content: '';
+  position: absolute;
+  top: 8rpx;
+  left: 10rpx;
+  width: 22rpx;
+  height: 14rpx;
+  border: 5rpx solid #14B8A6;
+  border-top: none;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-radius: 0 0 12rpx 12rpx;
+}
+
+/* ---------- 头像迷你版（复用比例：容器 76rpx，内容按 76/76 缩放绘制） ---------- */
+.avatar {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: linear-gradient(140deg, #FFFFFF, #E9FDFA);
+  box-shadow: 0 4rpx 10rpx rgba(11, 100, 119, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.bot-mini {
+  position: relative;
+  width: 44rpx;
+  height: 44rpx;
+}
+.bot-mini-visor {
+  position: absolute;
+  top: 6rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44rpx;
+  height: 34rpx;
+  background: #0B6477;
+  border-radius: 16rpx;
+}
+.bot-mini-eye {
+  position: absolute;
+  top: 11rpx;
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: #5EEAD4;
+}
+.bot-mini-eye.left { left: 11rpx; }
+.bot-mini-eye.right { right: 11rpx; }
+.bot-mini-mouth {
+  position: absolute;
+  bottom: 7rpx;
+  left: 50%;
+  margin-left: -7rpx;
+  width: 14rpx;
+  height: 7rpx;
+  border: 2.5rpx solid #5EEAD4;
+  border-top: none;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-radius: 0 0 10rpx 10rpx;
 }
 
 /* ---------- 推荐问题 ---------- */
