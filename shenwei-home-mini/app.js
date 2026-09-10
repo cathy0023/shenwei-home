@@ -5,7 +5,8 @@ App({
   globalData: {
     token: '',
     openid: '',
-    baseUrl: 'http://127.0.0.1:8200',
+    // 生产后端（本地调试可改回 http://127.0.0.1:8200）
+    baseUrl: 'https://xdf.nonoai.com.cn',
   },
 
   onLaunch() {
