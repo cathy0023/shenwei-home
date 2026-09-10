@@ -99,17 +99,18 @@
   border-radius: 50rpx;
   box-shadow: 0 10rpx 24rpx rgba(8, 74, 92, 0.25);
 }
-/* 耳机：头带弧 + 双层圆形耳罩 */
+/* 耳机：头带弧 + 双层圆形耳罩（弧端精准落在耳罩中心；明亮蓝青配色） */
+/* 几何：头带宽150(半宽75)，耳罩中心 x=±74 / y=67 → 弧半径74、弧底 y=67 */
 .bot-band {
   position: absolute;
-  top: -8rpx;
+  top: -13rpx;
   left: 50%;
   transform: translateX(-50%);
-  width: 170rpx;
-  height: 96rpx;
-  border: 12rpx solid #0B6477;
+  width: 148rpx;
+  height: 80rpx;
+  border: 12rpx solid #3FA8C9;
   border-bottom: none;
-  border-radius: 96rpx 96rpx 0 0;
+  border-radius: 74rpx 74rpx 0 0;
 }
 .bot-ear {
   position: absolute;
@@ -117,11 +118,11 @@
   width: 34rpx;
   height: 46rpx;
   border-radius: 16rpx;
-  background: #0B6477;
-  box-shadow: inset 0 -4rpx 8rpx rgba(0, 0, 0, 0.2), 0 4rpx 10rpx rgba(8, 74, 92, 0.3);
+  background: #3FA8C9;
+  box-shadow: inset 0 -4rpx 8rpx rgba(0, 60, 80, 0.18), 0 4rpx 10rpx rgba(8, 74, 92, 0.25);
 }
-.bot-ear.left { left: -18rpx; }
-.bot-ear.right { right: -18rpx; }
+.bot-ear.left { left: -19rpx; }
+.bot-ear.right { right: -19rpx; }
 /* 耳罩内芯：薄荷绿椭圆 + 顶部高光 */
 .bot-ear::after {
   content: '';
@@ -132,7 +133,7 @@
   width: 18rpx;
   height: 28rpx;
   border-radius: 9rpx;
-  background: #5EEAD4;
+  background: #8FF0E0;
 }
 .bot-ear::before {
   content: '';
@@ -143,7 +144,7 @@
   width: 10rpx;
   height: 6rpx;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.6);
   z-index: 1;
 }
 .bot-visor {
