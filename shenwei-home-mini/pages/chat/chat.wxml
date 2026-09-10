@@ -76,13 +76,8 @@
 
     <!-- 用户 / 客服 气泡 -->
     <view class="msg-row" wx:else>
-      <view class="avatar {{item.isHuman ? 'avatar-human' : ''}}" wx:if="{{!item.isUser}}">
-        <!-- 人工客服头像：人形徽章；AI：机器人小脸 -->
-        <view class="human-mini" wx:if="{{item.isHuman}}">
-          <view class="human-head"></view>
-          <view class="human-body"></view>
-        </view>
-        <view class="bot-mini" wx:else>
+      <view class="avatar" wx:if="{{!item.isUser}}">
+        <view class="bot-mini">
           <view class="bot-mini-visor">
             <view class="bot-mini-eye left"></view>
             <view class="bot-mini-eye right"></view>
@@ -90,8 +85,9 @@
           </view>
         </view>
       </view>
-      <view class="bubble {{item.isUser ? 'mine' : (item.isHuman ? 'human' : 'bot')}}">
-        <view class="human-tag" wx:if="{{item.isHuman}}">人工客服</view>
+      <view class="bubble {{item.isUser ? 'mine' : 'bot'}}">
+        <!-- 人工回复：右上角金色迷你标签 -->
+        <view class="human-corner-tag" wx:if="{{item.isHuman}}">人工</view>
         <image
           wx:if="{{item.isImage}}"
           class="pic"

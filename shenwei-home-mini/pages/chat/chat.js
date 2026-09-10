@@ -221,10 +221,6 @@ Page({
           this.setData({ messages: [...this.data.messages, ...fresh] });
           this.scrollToBottom();
         }
-        // 收到人工回复 → 转人工 chip 联动为「人工服务中」
-        if (fresh.some((m) => m.isHuman) && !this.data.transferred) {
-          this.setData({ transferred: true });
-        }
         this.lastSince = res.next_since;
         this.pollInterval = POLL_FAST_MS;
       } else {

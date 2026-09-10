@@ -340,52 +340,19 @@
   border-top-right-radius: 12rpx;
   box-shadow: 0 8rpx 20rpx rgba(14, 165, 233, 0.35);
 }
-/* 人工客服气泡：白底 + 琥珀金描边，与 AI 白泡区分 */
-.bubble.human {
-  background: #FFFBF2;
-  border: 2rpx solid #F5C242;
-  box-shadow: 0 8rpx 20rpx rgba(245, 194, 66, 0.25);
-}
-.human-tag {
-  display: inline-block;
-  margin-bottom: 8rpx;
-  padding: 2rpx 14rpx;
+/* 人工回复：气泡右上角迷你金标（轻量区分，气泡本体不变） */
+.human-corner-tag {
+  position: absolute;
+  top: -14rpx;
+  right: 12rpx;
+  padding: 1rpx 10rpx;
   border-radius: 999rpx;
   background: #F5C242;
   color: #fff;
-  font-size: 20rpx;
+  font-size: 18rpx;
   font-weight: 600;
-  line-height: 1.6;
-}
-/* 人工客服头像容器：琥珀渐变底 */
-.avatar-human {
-  background: linear-gradient(140deg, #FFE9BC, #F5C242);
-}
-/* 人工头像：人形徽章（圆头 + 半圆肩） */
-.human-mini {
-  position: relative;
-  width: 40rpx;
-  height: 44rpx;
-}
-.human-head {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 18rpx;
-  height: 18rpx;
-  border-radius: 50%;
-  background: #B8860B;
-}
-.human-body {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 32rpx;
-  height: 18rpx;
-  border-radius: 16rpx 16rpx 4rpx 4rpx;
-  background: #B8860B;
+  line-height: 1.5;
+  box-shadow: 0 2rpx 6rpx rgba(245, 194, 66, 0.35);
 }
 .bubble .pic {
   width: 100%;
