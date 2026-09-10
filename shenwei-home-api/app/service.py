@@ -112,31 +112,68 @@ async def _forward(**kwargs) -> str:
 
 
 def list_messages(*, openid: str, cursor: str | None, limit: int | None) -> dict:
-    """游标分页（created_at DESC, id DESC）；cursor 为上一页最后 id。"""
+    """游标分页（created_at DESC, id DESC）；cursor 为上一页最后 id。
+
+    历史视图 = messages（user/system）∪ deliveries（assistant 回复）按时间
+    归并——外部回复只落 deliveries，不合并则刷新后历史里没有 AI 侧内容。
+    """
     if limit is None:
         limit = LIST_DEFAULT_LIMIT
     limit = max(1, min(limit, LIST_MAX_LIMIT))
-    params: list = [openid]
-    where = "conversation_key = ?"
+    conn = get_conn()
+
+    msg_cond, msg_params = "", []
+    dlv_cond, dlv_params = "", []
     if cursor:
-        row = get_conn().execute(
+        m = conn.execute(
             "SELECT created_at FROM messages WHERE id = ? AND conversation_key = ?",
             (cursor, openid)).fetchone()
-        if row is None:
+        d = conn.execute(
+            "SELECT created_at FROM deliveries WHERE delivery_id = ? AND conversation_key = ?",
+            (cursor, openid)).fetchone()
+        if m is None and d is None:
             raise ValueError("invalid_cursor")
-        where += " AND (created_at < ? OR (created_at = ? AND id < ?))"
-        params += [row["created_at"], row["created_at"], cursor]
-    rows = get_conn().execute(
+        if m is not None:
+            msg_cond = "AND (created_at < ? OR (created_at = ? AND id < ?))"
+            msg_params = [m["created_at"], m["created_at"], cursor]
+            dlv_cond, dlv_params = "AND created_at <= ?", [m["created_at"]]
+        else:
+            msg_cond, msg_params = "AND created_at <= ?", [d["created_at"]]
+            dlv_cond = "AND (created_at < ? OR (created_at = ? AND delivery_id < ?))"
+            dlv_params = [d["created_at"], d["created_at"], cursor]
+
+    msg_rows = conn.execute(
         f"SELECT id, role, msg_type, content, status, created_at FROM messages "
-        f"WHERE {where} ORDER BY created_at DESC, id DESC LIMIT ?",
-        (*params, limit + 1)).fetchall()
-    has_more = len(rows) > limit
-    rows = rows[:limit]
-    items = [_row_to_item(r) for r in rows]
+        f"WHERE conversation_key = ? {msg_cond} "
+        f"ORDER BY created_at DESC, id DESC LIMIT ?",
+        (openid, *msg_params, limit + 1)).fetchall()
+    dlv_rows = conn.execute(
+        "SELECT delivery_id AS id, 'assistant' AS role, msg_type, content, '' AS status, created_at "
+        f"FROM deliveries WHERE conversation_key = ? {dlv_cond} "
+        "ORDER BY created_at DESC, delivery_id DESC LIMIT ?",
+        (openid, *dlv_params, limit + 1)).fetchall()
+
+    merged = sorted(
+        [_row_to_item(r) for r in msg_rows] + [_delivery_to_item(r) for r in dlv_rows],
+        key=lambda i: (i["created_at"], i["id"]),
+        reverse=True)
+    has_more = len(merged) > limit
+    page = merged[:limit]
     return {
-        "items": items,
-        "next_cursor": rows[-1]["id"] if rows and has_more else "",
+        "items": page,
+        "next_cursor": page[-1]["id"] if page and has_more else "",
         "has_more": has_more,
+    }
+
+
+def _delivery_to_item(r) -> dict:
+    return {
+        "id": r["id"],
+        "role": r["role"],
+        "msg_type": r["msg_type"],
+        "content": json.loads(r["content"]),
+        "status": r["status"] or "accepted",
+        "created_at": r["created_at"],
     }
 
 
