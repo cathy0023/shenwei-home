@@ -27,12 +27,17 @@ Page({
   lastSince: 0,
   transferLockUntil: 0,   // 转人工 5s 防抖
 
-  onLoad() {
+  async onLoad() {
     const app = getApp();
     this.baseUrl = app.globalData.baseUrl;
-    this.token = app.globalData.token;
+    // 冷启动竞态修复：App.onLaunch 的静默登录是异步的，页面 onLoad 时 token
+    // 可能还没回来（实测 401）。等登录完成（含失败兜底）再拉历史/起轮询。
+    if (!this.token) {
+      await app.silentLogin();
+      this.token = app.globalData.token;
+    }
     this.loadSuggestions();
-    this.loadHistory();
+    await this.loadHistory();
     this.startPolling();
   },
 
@@ -75,7 +80,11 @@ Page({
       this.scrollToBottom();
     } catch (err) {
       console.error('loadHistory failed', err);
-      if (err.statusCode === 401) this.relogin();
+      if (err.statusCode === 401) {
+        // 兜底：token 失效则重登一次并重拉历史（替代只登不拉）
+        await this.relogin();
+        return this.loadHistory();
+      }
     }
   },
 
