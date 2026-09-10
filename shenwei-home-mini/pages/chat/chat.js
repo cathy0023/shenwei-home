@@ -19,7 +19,7 @@ Page({
     showImagePanel: false,
     sending: false,
     transferred: false,
-    welcomeVisible: true,  // 开场白气泡：仅无历史时显示；发消息后隐藏
+    welcomeVisible: true,  // 开场白气泡：常显（品牌问候，固定在消息流顶部）
     showHero: true,        // 品牌区（Hero + 推荐问题）始终显示
   },
 
@@ -70,10 +70,7 @@ Page({
       const res = await api.list(this.baseUrl, this.token);
       // list 按 created_at DESC 返回（最新在前）；聊天 UI 需要 ASC（最新在底部）
       const messages = res.items.map(this.toViewModel).reverse();
-      this.setData({
-        messages,
-        welcomeVisible: messages.length === 0,  // 有历史则不再显示开场白
-      });
+      this.setData({ messages });
       if (messages.length) {
         // 以最新一条的 created_at 初始化轮询游标，避免 poll 从 0 开始重放全量历史
         this.lastSince = Math.max(...res.items.map((i) => i.created_at));
@@ -138,7 +135,6 @@ Page({
       id: tempId, role: 'user', isUser: true, isSystem: false, isImage: false,
       content: text, picUrl: '', status: 'pending',
     });
-    this.hideWelcome();
     try {
       const res = await api.send(this.baseUrl, this.token, text);
       this.updateLocalStatus(tempId, res.status);
@@ -168,8 +164,7 @@ Page({
         id: tempId, role: 'user', isUser: true, isSystem: false, isImage: true,
         content: '', picUrl: filePath, status: 'pending',
       });
-      this.hideWelcome();
-      const res = await api.uploadImage(this.baseUrl, this.token, filePath);
+        const res = await api.uploadImage(this.baseUrl, this.token, filePath);
       this.updateLocalStatus(tempId, res.status);
       wx.showToast({ title: '图片已发送', icon: 'none' });
     } catch (err) {
@@ -252,11 +247,6 @@ Page({
     const messages = this.data.messages.map((m) =>
       m.id === tempId ? { ...m, status } : m);
     this.setData({ messages });
-  },
-
-  hideWelcome() {
-    // 只隐藏开场白气泡；Hero/推荐问题保持常显（品牌区）
-    if (this.data.welcomeVisible) this.setData({ welcomeVisible: false });
   },
 
   scrollToBottom() {
