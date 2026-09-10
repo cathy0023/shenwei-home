@@ -451,7 +451,10 @@
 .chip-done { border-color: var(--teal-500); color: var(--teal-600); background: #EFFCF9; }
 
 /* ---------- 输入区 ---------- */
-.inputzone { background: var(--bg); }
+/* 底部输入区：比页面底色深一档的青灰渐变（向上过渡），与聊天区形成分区 */
+.inputzone {
+  background: linear-gradient(180deg, #E3F0F1 0%, #D8E9EB 100%);
+}
 .inputbar {
   display: flex;
   align-items: center;
