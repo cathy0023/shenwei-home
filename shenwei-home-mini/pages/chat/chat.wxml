@@ -1,4 +1,6 @@
 <!-- 聊天主页面：hero + 推荐卡片 + 气泡流 + 快捷条 + 输入区 -->
+<!-- container: flex 纵向布局，chat-scroll 的 flex:1/height:0 依赖此父容器 -->
+<view class="container">
 <scroll-view
   class="chat-scroll"
   scroll-y
@@ -109,4 +111,5 @@
     </view>
   </view>
   <view class="home-indicator"></view>
+</view>
 </view>
