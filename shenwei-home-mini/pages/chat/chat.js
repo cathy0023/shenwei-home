@@ -140,7 +140,7 @@ Page({
     this.sendText(e.currentTarget.dataset.q);
   },
 
-  /** 图片：选择即上传（≤10MB 由后端兜底）。 */
+  /** 图片：选择 → 压缩 → 上传（后端 ≤10MB 兜底）。 */
   async onChooseImage() {
     this.closePanels();
     try {
@@ -149,7 +149,12 @@ Page({
         mediaType: ['image'],
         sizeType: ['compressed'],
       });
-      const filePath = tempFiles[0].tempFilePath;
+      let filePath = tempFiles[0].tempFilePath;
+      // 压缩上传体积（聊天展示 360rpx 宽，quality 60 视觉无损）；失败退回原图
+      try {
+        const cmp = await wx.compressImage({ src: filePath, quality: 60 });
+        filePath = cmp.tempFilePath;
+      } catch (e) { /* 压缩不可用时用原图 */ }
       const tempId = `temp-${Date.now()}`;
       this.appendLocal({
         id: tempId, role: 'user', isUser: true, isSystem: false, isImage: true,
