@@ -65,7 +65,7 @@ Page({
     }
   },
 
-  async loadHistory() {
+  async loadHistory(retried) {
     try {
       const res = await api.list(this.baseUrl, this.token);
       // list 按 created_at DESC 返回（最新在前）；聊天 UI 需要 ASC（最新在底部）
@@ -78,11 +78,12 @@ Page({
       this.scrollToBottom();
     } catch (err) {
       console.error('loadHistory failed', err);
-      if (err.statusCode === 401) {
-        // 兜底：token 失效则重登一次并重拉历史（替代只登不拉）
-        await this.relogin();
-        return this.loadHistory();
+      // 401 兜底：重登一次并重拉；只重试一次，wx.login 失败（如工具登录态过期）则终止，防无限递归
+      if (err.statusCode === 401 && !retried) {
+        const ok = await this.relogin();
+        if (ok) return this.loadHistory(true);
       }
+      wx.showToast({ title: '历史加载失败，请稍后重进', icon: 'none' });
     }
   },
 
@@ -239,6 +240,7 @@ Page({
     const app = getApp();
     await app.silentLogin();
     this.token = app.globalData.token;
+    return !!this.token;  // wx.login 失败时 token 仍为空，调用方据此终止重试
   },
 
   // ---------- 本地消息操作 ----------
