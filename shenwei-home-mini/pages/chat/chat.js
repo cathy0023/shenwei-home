@@ -161,10 +161,9 @@ Page({
         content: '', picUrl: filePath, status: 'pending',
       });
       const res = await api.uploadImage(this.baseUrl, this.token, filePath);
-      // 本地 tmp 路径易失（工具/系统会清理）：上传成功后换成本服务器签名 URL
-      const messages = this.data.messages.map((m) =>
-        m.id === tempId ? { ...m, status: res.status, picUrl: res.image_url } : m);
-      this.setData({ messages });
+      // 本会话内继续用本地 tmp 路径展示（零加载零闪烁）；签名 URL 在下次拉历史时使用。
+      // 仅同步状态；tmp 路径在前台会话期内稳定有效。
+      this.updateLocalStatus(tempId, res.status);
       wx.showToast({ title: '图片已发送', icon: 'none' });
     } catch (err) {
       if (err && err.errMsg && err.errMsg.includes('cancel')) return;
