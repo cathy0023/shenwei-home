@@ -340,14 +340,11 @@
   border-top-right-radius: 12rpx;
   box-shadow: 0 8rpx 20rpx rgba(14, 165, 233, 0.35);
 }
-/* 人工客服头像：琥珀渐变底 + 人形徽章 */
-.avatar-human {
-  background: linear-gradient(140deg, #FFE9BC, #F5C242);
-}
+/* 人工客服头像：与 AI 同款白青渐变底，仅内部人形徽章为琥珀色（头肩紧凑相连） */
 .human-mini {
   position: relative;
   width: 40rpx;
-  height: 44rpx;
+  height: 38rpx;
 }
 .human-head {
   position: absolute;
@@ -357,17 +354,17 @@
   width: 18rpx;
   height: 18rpx;
   border-radius: 50%;
-  background: #B8860B;
+  background: #F5C242;
 }
 .human-body {
   position: absolute;
-  bottom: 0;
+  top: 16rpx;
   left: 50%;
   transform: translateX(-50%);
-  width: 32rpx;
-  height: 18rpx;
-  border-radius: 16rpx 16rpx 4rpx 4rpx;
-  background: #B8860B;
+  width: 34rpx;
+  height: 22rpx;
+  border-radius: 17rpx 17rpx 6rpx 6rpx;
+  background: #F5C242;
 }
 
 /* 人工回复：气泡右上角迷你金标（轻量区分，气泡本体不变） */

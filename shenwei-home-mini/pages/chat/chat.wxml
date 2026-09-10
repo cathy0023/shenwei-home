@@ -76,7 +76,7 @@
 
     <!-- 用户 / 客服 气泡 -->
     <view class="msg-row" wx:else>
-      <view class="avatar {{item.isHuman ? 'avatar-human' : ''}}" wx:if="{{!item.isUser}}">
+      <view class="avatar" wx:if="{{!item.isUser}}">
         <!-- 人工：人形徽章；AI：机器人小脸 -->
         <view class="human-mini" wx:if="{{item.isHuman}}">
           <view class="human-head"></view>
