@@ -1,6 +1,8 @@
 {
   "pages": [
-    "pages/chat/chat"
+    "pages/mine/mine",
+    "pages/chat/chat",
+    "pages/webview/webview"
   ],
   "window": {
     "navigationBarBackgroundColor": "#BEDFD9",

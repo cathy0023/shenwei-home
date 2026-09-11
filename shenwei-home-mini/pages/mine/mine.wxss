@@ -1,0 +1,39 @@
+.mine-page { min-height: 100vh; background: #F4F9F9; padding-top: 40rpx; }
+.profile { display: flex; flex-direction: column; align-items: center; padding: 30rpx 0 50rpx; }
+.avatar-circle {
+  width: 128rpx; height: 128rpx; border-radius: 50%;
+  background: linear-gradient(140deg, #FFFFFF, #E9FDFA);
+  box-shadow: 0 8rpx 20rpx rgba(11, 100, 119, .15);
+  display: flex; align-items: center; justify-content: center;
+}
+.avatar-bot { position: relative; width: 64rpx; height: 50rpx; }
+.ab-visor { position: absolute; inset: 0; background: #0B6477; border-radius: 22rpx; }
+.ab-eye { position: absolute; top: 16rpx; width: 9rpx; height: 9rpx; border-radius: 50%; background: #5EEAD4; }
+.ab-eye.l { left: 16rpx; }
+.ab-eye.r { right: 16rpx; }
+.ab-mouth {
+  position: absolute; bottom: 10rpx; left: 50%; margin-left: -10rpx;
+  width: 20rpx; height: 10rpx;
+  border: 3.5rpx solid #5EEAD4; border-top: none;
+  border-left-color: transparent; border-right-color: transparent;
+  border-radius: 0 0 14rpx 14rpx;
+}
+.nickname { margin-top: 20rpx; font-size: 32rpx; font-weight: 600; color: #17323F; }
+
+.menu-card {
+  margin: 0 24rpx; background: #fff; border-radius: 22rpx;
+  box-shadow: 0 8rpx 24rpx rgba(11, 100, 119, .10); overflow: hidden;
+}
+.menu-item {
+  display: flex; align-items: center; gap: 20rpx;
+  padding: 32rpx 32rpx; border-bottom: 1rpx solid #EFF4F5;
+  font-size: 30rpx; color: #17323F;
+}
+.menu-item:last-child { border-bottom: none; }
+.menu-item.disabled { opacity: .4; }
+.mi-icon { font-size: 34rpx; }
+.mi-label { flex: 1; }
+.mi-arrow { color: #C3D4D9; font-size: 34rpx; }
+.menu-item:active { background: #F2FBFA; }
+
+.version { text-align: center; margin-top: 60rpx; font-size: 24rpx; color: #9AB5BE; }

@@ -10,7 +10,17 @@ App({
   },
 
   onLaunch() {
-    this.silentLogin();
+    this.ensureLogin();
+  },
+
+  /** 静默登录（缓存 Promise）：防多处并发触发；调用方 await 后保证 token 已就绪或已失败。 */
+  ensureLogin() {
+    if (!this._loginPromise) {
+      this._loginPromise = this.silentLogin().finally(() => {
+        this._loginPromise = null;
+      });
+    }
+    return this._loginPromise;
   },
 
   /** wx.login 静默登录：code 换 token；失败不阻塞 UI（聊天页可重试）。 */

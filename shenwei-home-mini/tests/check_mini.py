@@ -59,6 +59,16 @@ def main() -> int:
     for banned in ("服务评价", "购物车", "工单", "切换学员"):
         check(banned not in wxml, f"WXML 出现裁剪项 {banned}")
 
+    # 7. T6 小程序壳：mine/webview 页面 + 禁分享 + H5 URL
+    for f in ("mine.js", "mine.wxml", "mine.json", "webview.js", "webview.wxml", "webview.json"):
+        check((MINI / "pages" / f.split(".")[0] / f).is_file(), f"缺少 pages/{f.split('.')[0]}/{f}")
+    app_json = json.loads((MINI / "app.json").read_text())
+    for page in ("pages/mine/mine", "pages/webview/webview"):
+        check(page in app_json.get("pages", []), f"app.json 未注册 {page}")
+    webview_js = (MINI / "pages/webview/webview.js").read_text()
+    check("onShareAppMessage" in webview_js, "webview 页缺 onShareAppMessage（禁分享防 token 泄露）")
+    check("/h5/" in webview_js, "webview 页缺 H5 地址 /h5/")
+
     if FAILURES:
         print("FAIL:")
         for f in FAILURES:
