@@ -5,6 +5,7 @@
 前提：后端运行中；脚本以服务器本地 SQLite 直插方式获取 token（wx.login code 微信外不可得）。
 """
 import json
+import os
 import secrets
 import sys
 import time
@@ -12,7 +13,8 @@ import urllib.request
 from pathlib import Path
 
 BASE = "https://xdf.nonoai.com.cn"
-API_DIR = Path(__file__).resolve().parent.parent.parent / "shenwei-home-api"
+# 服务器实际部署路径；本仓结构为 <repo>/shenwei-home-h5/scripts/ 本脚本
+API_DIR = Path(os.environ.get("SHM_API_DIR", "/opt/shenwei-home-api"))
 FAILURES = []
 
 
@@ -25,6 +27,7 @@ def check(cond, msg):
 def main():
     sys.path.insert(0, str(API_DIR))
     import os
+    os.chdir(API_DIR)  # app 包以 API_DIR 为根导入
     os.environ.setdefault("SHM_SQLITE_PATH", str(API_DIR / "shenwei_home.db"))
     from app import db as db_mod
 
