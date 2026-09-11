@@ -1,0 +1,293 @@
+/* 深维之家 H5 聊天页 — 设计变量移植自 shenwei-home-mini/design/preview.html @v0.1 */
+:root {
+  --teal-400: #2DD4C8;
+  --teal-500: #14B8A6;
+  --teal-600: #0D9488;
+  --deep-700: #0B6477;
+  --deep-800: #084A5C;
+  --cyan-glow: #5EEAD4;
+  --amber: #F0B429;
+  --ink: #17323F;
+  --ink-soft: #5B7280;
+  --bg: #F4F9F9;
+  --card: #FFFFFF;
+  --shadow-soft: 0 8px 24px rgba(11, 100, 119, .10);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: -apple-system, 'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 16px; /* ≥16px 防 iOS 聚焦缩放 */
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  border-radius: 22px;
+  padding: 26px 22px 30px;
+  background:
+    radial-gradient(340px 200px at 88% -20%, rgba(94, 234, 212, .55), transparent 60%),
+    radial-gradient(300px 220px at -10% 120%, rgba(14, 165, 233, .35), transparent 55%),
+    linear-gradient(150deg, #0E7D8F 0%, #12A5A5 55%, #2CC7B4 100%);
+  color: #fff;
+  overflow: hidden;
+  margin: 12px 16px 16px;
+  box-shadow: 0 16px 40px rgba(11, 100, 119, .16);
+}
+.hero-hello {
+  font-weight: 900;
+  font-size: 38px;
+  line-height: 1.05;
+  background: linear-gradient(100deg, #B9F7EE 10%, #7DE9FF 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero-sub { margin-top: 8px; font-size: 15px; font-weight: 600; color: #E8FBF8; }
+.hero-sub .hl { color: #FFE5A3; border-bottom: 2px solid rgba(255, 229, 163, .6); padding-bottom: 1px; }
+
+/* ---------- 纯 CSS 机器人（hero 版） ---------- */
+.mascot-css {
+  position: absolute; right: 10px; bottom: 6px;
+  width: 110px; height: 125px; font-size: 10px;
+  animation: botFloat 3.6s ease-in-out infinite;
+}
+@keyframes botFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.bot-antenna {
+  position: absolute; top: -4px; left: 50%; margin-left: -1px;
+  width: 2px; height: 12px; background: rgba(255, 255, 255, .9); border-radius: 1px;
+}
+.bot-antenna::after {
+  content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #FFE5A3; box-shadow: 0 0 4px rgba(255, 229, 163, .8);
+}
+.bot-band {
+  position: absolute; top: -6.5px; left: 50%; transform: translateX(-50%);
+  width: 74px; height: 40px;
+  border: 6px solid #3FA8C9; border-bottom: none;
+  border-radius: 37px 37px 0 0;
+}
+.bot-head {
+  position: absolute; top: 7px; left: 50%; transform: translateX(-50%);
+  width: 75px; height: 65px; background: #fff;
+  border-radius: 25px; box-shadow: 0 5px 12px rgba(8, 74, 92, .25);
+}
+.bot-ear {
+  position: absolute; top: 22px; width: 17px; height: 23px;
+  border-radius: 8px; background: #3FA8C9;
+  box-shadow: inset 0 -2px 4px rgba(0, 60, 80, .18), 0 2px 5px rgba(8, 74, 92, .25);
+}
+.bot-ear.left { left: -9.5px; }
+.bot-ear.right { right: -9.5px; }
+.bot-ear::after {
+  content: ''; position: absolute; top: 4px; left: 50%; transform: translateX(-50%);
+  width: 9px; height: 14px; border-radius: 4.5px; background: #8FF0E0;
+}
+.bot-visor {
+  position: absolute; top: 13px; left: 50%; transform: translateX(-50%);
+  width: 56px; height: 38px; background: #0B6477;
+  border-radius: 17px; overflow: hidden;
+}
+.bot-eye { position: absolute; top: 12px; width: 6px; height: 6px; border-radius: 50%; background: #5EEAD4; }
+.bot-eye.left { left: 14px; }
+.bot-eye.right { right: 14px; }
+.bot-mouth {
+  position: absolute; bottom: 8px; left: 50%; margin-left: -7px;
+  width: 14px; height: 7px;
+  border: 2px solid #5EEAD4; border-top: none;
+  border-left-color: transparent; border-right-color: transparent;
+  border-radius: 0 0 10px 10px;
+}
+.bot-body {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 55px; height: 45px; background: #fff;
+  border-radius: 18px 18px 13px 13px;
+  box-shadow: 0 5px 12px rgba(8, 74, 92, .25);
+}
+.bot-chest {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  width: 28px; height: 20px; background: #D9F6F1; border-radius: 7px;
+}
+
+/* ---------- 聊天滚动区 ---------- */
+.chat-scroll {
+  flex: 1; height: 0; overflow-y: auto;
+  padding: 12px 16px 8px;
+  background: linear-gradient(180deg, #CDEFEA 0%, #E7F6F4 240px, rgba(231, 246, 244, 0) 420px);
+  scrollbar-width: none;
+}
+.chat-scroll::-webkit-scrollbar { display: none; }
+
+/* ---------- 消息 ---------- */
+.msg { display: flex; gap: 10px; margin: 14px 0; animation: msgIn .35s cubic-bezier(.2, .9, .3, 1.1) both; }
+.msg.user { flex-direction: row-reverse; }
+@keyframes msgIn { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: none; } }
+
+.avatar {
+  width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(140deg, #FFFFFF, #E9FDFA);
+  box-shadow: 0 4px 10px rgba(11, 100, 119, .15);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+/* 机器人小脸（AI 头像） */
+.bot-mini { position: relative; width: 22px; height: 17px; }
+.bot-mini-visor {
+  position: absolute; top: 0; left: 0; width: 22px; height: 17px;
+  background: #0B6477; border-radius: 8px;
+}
+.bot-mini-eye { position: absolute; top: 5.5px; width: 3px; height: 3px; border-radius: 50%; background: #5EEAD4; }
+.bot-mini-eye.left { left: 5.5px; }
+.bot-mini-eye.right { right: 5.5px; }
+.bot-mini-mouth {
+  position: absolute; bottom: 3.5px; left: 50%; margin-left: -3.5px;
+  width: 7px; height: 3.5px;
+  border: 1.2px solid #5EEAD4; border-top: none;
+  border-left-color: transparent; border-right-color: transparent;
+  border-radius: 0 0 5px 5px;
+}
+/* 人形徽章（人工头像，SVG path 经 CSS mask） */
+.human-mini {
+  width: 20px; height: 20px; background: #F0B429;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M4 22C4 17.5817 7.58172 14 12 14C16.4183 14 20 17.5817 20 22H18C18 18.6863 15.3137 16 12 16C8.68629 16 6 18.6863 6 22H4ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11Z'/></svg>");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M4 22C4 17.5817 7.58172 14 12 14C16.4183 14 20 17.5817 20 22H18C18 18.6863 15.3137 16 12 16C8.68629 16 6 18.6863 6 22H4ZM12 13C8.685 13 6 10.315 6 7C6 3.685 8.685 1 12 1C15.315 1 18 3.685 18 7C18 10.315 15.315 13 12 13ZM12 11C14.21 11 16 9.21 16 7C16 4.79 14.21 3 12 3C9.79 3 8 4.79 8 7C8 9.21 9.79 11 12 11Z'/></svg>");
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+}
+
+.bubble {
+  max-width: 72%; padding: 12px 15px; border-radius: 18px;
+  font-size: 15px; line-height: 1.65; color: var(--ink);
+  background: var(--card); box-shadow: var(--shadow-soft);
+  border-top-left-radius: 6px; word-break: break-word; position: relative;
+}
+.msg.user .bubble {
+  background: linear-gradient(135deg, #14B8A6, #0EA5E9);
+  color: #fff; border-top-left-radius: 18px; border-top-right-radius: 6px;
+  box-shadow: 0 8px 20px rgba(14, 165, 233, .35);
+}
+/* 图片消息裸气泡 */
+.bubble.pic-bubble {
+  padding: 0 !important; background: transparent !important;
+  box-shadow: none !important; overflow: hidden;
+}
+.bubble .pic {
+  width: 180px; max-width: 100%;
+  border-radius: 12px; display: block;
+}
+.pic-fallback {
+  width: 180px; max-width: 100%; height: 110px;
+  border-radius: 12px; background: #EEF4F5;
+  border: 1px dashed #C9DADD;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+}
+.pic-fallback-icon { font-size: 22px; opacity: .55; }
+.pic-fallback-text { font-size: 11px; color: #9AB5BE; }
+.fail-mark {
+  position: absolute; top: -6px; right: -6px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #EF4444; color: #fff; font-size: 12px;
+  text-align: center; line-height: 18px;
+}
+/* 人工金标（气泡右上角） */
+.human-corner-tag {
+  position: absolute; top: -8px; right: 6px;
+  padding: 0.5px 5px; border-radius: 999px;
+  background: #F0B429; color: #fff;
+  font-size: 10px; font-weight: 600; line-height: 1.5;
+  box-shadow: 0 1px 3px rgba(245, 194, 66, .35);
+}
+.sys-tip {
+  margin: 14px auto; max-width: 80%; text-align: center;
+  font-size: 12.5px; color: var(--deep-700);
+  background: rgba(20, 184, 166, .10);
+  border: 1px dashed rgba(20, 184, 166, .4);
+  padding: 9px 14px; border-radius: 14px;
+}
+
+/* ---------- 快捷条 / 输入区 ---------- */
+.quickbar { display: flex; gap: 10px; padding: 10px 16px 4px; }
+.chip {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: 999px;
+  background: #fff; border: 1.5px solid #D8EBEA;
+  color: var(--deep-700); font-size: 13.5px; font-weight: 600;
+  box-shadow: 0 3px 10px rgba(11, 100, 119, .06);
+  cursor: pointer; transition: all .2s; border: 1.5px solid #D8EBEA;
+}
+.chip:active { transform: scale(.95); }
+.chip-done { border-color: var(--teal-500); color: var(--teal-600); background: #EFFCF9; }
+
+.inputzone { background: linear-gradient(180deg, #E3F0F1 0%, #D8E9EB 100%); padding-bottom: env(safe-area-inset-bottom, 0); }
+.inputbar {
+  display: flex; align-items: center; gap: 8px;
+  margin: 8px 14px 10px; background: #fff;
+  border-radius: 999px; padding: 6px 8px 6px 4px;
+  box-shadow: 0 6px 22px rgba(11, 100, 119, .12);
+  border: 1.5px solid #E2EFEE;
+}
+.icon-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #7FA3AD; cursor: pointer; flex-shrink: 0; font-size: 18px;
+  background: none; border: none; transition: all .2s;
+}
+.icon-btn.active { background: rgba(20, 184, 166, .14); color: var(--teal-600); }
+.icon-btn:active { transform: scale(.88); }
+.inputbar input {
+  flex: 1; border: none; outline: none; font-size: 16px;
+  font-family: inherit; color: var(--ink); background: transparent; min-width: 0;
+}
+.inputbar input::placeholder { color: #AEC6CD; }
+.send-btn {
+  width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--teal-500), #0EA5E9); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, .4); transition: all .2s; font-size: 15px;
+}
+.send-btn:disabled { opacity: .35; box-shadow: none; }
+.send-btn:active { transform: scale(.9); }
+
+/* 表情面板 */
+.panel { max-height: 0; overflow: hidden; transition: max-height .32s ease; background: #fff; }
+.panel.open { max-height: 220px; box-shadow: 0 -8px 30px rgba(11, 100, 119, .10); }
+.emoji-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; padding: 14px 18px 18px; overflow-y: auto; max-height: 220px; }
+.emoji-grid button {
+  font-size: 24px; background: none; border: none; border-radius: 8px;
+  cursor: pointer; padding: 2px 0; transition: transform .12s, background .12s;
+}
+.emoji-grid button:hover { background: #EFF8F7; }
+.emoji-grid button:active { transform: scale(1.2); }
+
+/* 空态 / 错误态 */
+.state-card {
+  margin: 40px auto; max-width: 80%; text-align: center;
+  padding: 24px; border-radius: 16px; background: var(--card);
+  box-shadow: var(--shadow-soft);
+}
+.state-card h3 { font-size: 17px; margin-bottom: 8px; color: var(--ink); }
+.state-card p { font-size: 13px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 14px; }
+.state-card button {
+  padding: 8px 22px; border-radius: 999px; border: none;
+  background: linear-gradient(135deg, var(--teal-500), #0EA5E9);
+  color: #fff; font-size: 14px; cursor: pointer;
+}
+
+.home-indicator { height: 20px; display: flex; align-items: center; justify-content: center; }
+.home-indicator::after { content: ''; width: 120px; height: 4px; border-radius: 2px; background: #C9DADD; }
