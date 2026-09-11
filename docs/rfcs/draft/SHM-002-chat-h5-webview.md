@@ -59,8 +59,8 @@ H5 (React 18 + Vite + TS)
 
 - 小程序「我的」页 onLoad 静默登录（复用现有 app.js silentLogin 链路）→ token 存 globalData；
 - 点「联系客服」→ `pages/webview/webview?token=<token>` → web-view src=`https://xdf.nonoai.com.cn/h5/?token=`；
-- H5 首帧：解析 query token → 存 sessionStorage → `history.replaceState` 清除 URL 中的 token → 所有 API 带 Bearer；
-- token 失效（401）：H5 显示错误态卡片「登录已过期，请返回小程序重新进入」+ 返回按钮（`wx.miniProgram.navigateBack`，JSSDK 可用时）；
+- H5 首帧：读 URL query 的 token（优先）→ 无存则回读 sessionStorage（刷新/内存重载恢复）→ 存 sessionStorage → `history.replaceState` 清除 URL 中的 token → 所有 API 带 Bearer；
+- token 失效（401）：先清 sessionStorage，H5 显示错误态卡片「登录已过期，请返回小程序重新进入」+ 返回按钮（`wx.miniProgram.navigateBack`，JSSDK 可用时）；
 - 发布前升级：后端签发 60s 一次性 ticket 代替长期 token 上 URL（Additive：新增 `/api/auth/exchange` 端点，H5 改首帧换 token）。
 
 ### 3.4 H5 聊天页功能规格（对齐原生页最终形态）
@@ -70,7 +70,8 @@ H5 (React 18 + Vite + TS)
 | 消息流 | list 倒序反转 ASC 展示；`kind=boss_reply` 右上角「人工」金标 + 琥珀人形徽章头像（CSS mask SVG）；图片消息裸气泡无边框 |
 | 发文字 | 乐观回显 temp 气泡 → send API → 状态同步；≤2000 字 |
 | 发图片 | `<input type="file" accept="image/*">`（**单文件**，Android multiple 有兼容坑）→ canvas 压缩（quality 0.6，长边 1600px）→ FormData 上传 → 本地 blob URL 展示（会话内），历史从签名 URL 加载；失败占位卡片 |
-| 收回复 | 轮询 poll?since= 游标，3s 起、空闲退避 10s；visibilitychange 暂停/恢复 |
+| 历史分页 | 上滑加载更早：游标 list 接口（cursor=首条 id），加载态提示，游标从最新历史项初始化防重放 |
+| 收回复 | 轮询 poll?since= 游标，3s 起、空闲退避 10s；visibilitychange 暂停/恢复（恢复时立即拉一次） |
 | 转人工 | chip → transfer API → system 提示渲染 |
 | 表情 | 常用 emoji 盘（对齐原生页 32 枚） |
 | 键盘 | `visualViewport` 监听 + 消息列表 scrollIntoView；输入框字号 ≥16px 防 iOS 缩放 |
@@ -86,13 +87,28 @@ H5 (React 18 + Vite + TS)
 ### 3.6 nginx（`/etc/nginx/conf.d/xdf.conf` 追加）
 
 ```nginx
+# 目录布局：/opt/shenwei-home/h5/（root 指向上级，URI 前缀自然命中，无 alias 拼接陷阱）
 location /h5/ {
-    alias /opt/shenwei-home-h5/;
-    try_files $uri $uri/ /h5/index.html;   # SPA fallback 用完整子路径（alias 陷阱）
+    root /opt/shenwei-home;
+    try_files $uri $uri/ /h5/index.html;   # 单视图无路由：fallback 仅为 /h5/ 本身重载兜底
 }
-# 静态资源 hash 长缓存由文件名保证；index.html 不缓存
-location = /h5/index.html { add_header Cache-Control "no-cache"; }
+# index.html 不缓存（gzip 静态资源开启；add_header 继承规则：本 location 不继承 server 级头，如未来加安全头需 include 统一）
+location = /h5/index.html { root /opt/shenwei-home; add_header Cache-Control "no-cache"; }
+# token 脱敏：access log 写入前剔除 token= 参数（方案锁定——nginx log_format 变体）
+log_format tokenless '$remote_addr [$time_local] "$request_method $uri" '
+                  '$status $body_bytes_sent '
+                  '"$http_referer" "$http_user_agent"';   # 自定义 format 不含 $args
+access_log /var/log/nginx/xdf.access.log tokenless if=$log_tokenless;   # 仅 /h5/ 路径走该 format
 ```
+
+## 3.6b Non-Goals
+
+- SSE 实时推送（spec 已备：`docs/superpowers/specs/2026-09-10-sse-push-design.md`，独立迭代）；
+- 语音消息、客服坐席工作台、管理后台；
+- 正式发布所需的业务域名配置/校验文件/ICP 备案（发布阶段清单，不阻塞开发）；
+- H5 独立 SEO/分享能力（web-view 内无意义）；
+- 后端 API 改动（本期零改动）；
+- ticket 换 token 升级（发布前增强项，本期用内联 token）。
 
 ### 3.7 Alternatives Considered
 
@@ -102,31 +118,36 @@ location = /h5/index.html { add_header Cache-Control "no-cache"; }
 | 身份传递 | URL 内联 token | ticket 换 token / cookie / postMessage | ticket 为发布前升级项（后端加端点即可）；cookie 在 web-view 割裂不可靠；postMessage 仅特定时机投递 |
 | 部署 | nginx 子路径 /h5/ | FastAPI StaticFiles / 独立子域 | StaticFiles 前后端发版耦合；子域需新证书+业务域名多配一条 |
 | 图片选择 | H5 input file 单文件 | JSSDK wx.chooseImage | JSSDK 需后端签名 wx.config 且仅限图片；input file 基本可用 |
+| 客户端架构 | web-view+H5 | Taro/uni-app 跨端编译 | 交付物需独立 H5 嵌客户 webview；存量原生页重写+框架锁定成本高 |
+| 客户端架构 | web-view+H5 | 维持原生不做 H5 | 不满足「对齐客户侧 webview+H5 交付形态」的业务驱动 |
 
 ## 4. Implementation
 
 | Task | 标题 | 产出 | 依赖 |
 |---|---|---|---|
+| T0 | 建仓 | `shenwei-home-h5/` 目录入现有仓（含 .gitignore 排除 dist/node_modules），首次推送 GitHub | - |
 | T1 | H5 脚手架 + API 层 | `shenwei-home-h5/`（Vite+React+TS，base=/h5/）、`src/api.ts`（token 注入/401 错误态）、token query 解析工具 | - |
-| T2 | 聊天页 UI 骨架 + 设计变量 | 全局样式（preview.html 变量移植）、消息流组件（气泡/头像/金标）、输入栏组件、hero 区 | T1 |
+| T2 | 聊天页 UI 骨架 + 设计变量 + 键盘/安全区 | 全局样式（preview.html 变量移植）、消息流组件（气泡/头像/金标）、输入栏组件（fixed 布局定型时即做 visualViewport 键盘适配 + safe-area，不后置）、hero 区 | T1 |
 | T3 | 核心交互 | 发文字（乐观回显）、历史分页、轮询收回复（退避+visibilitychange）、表情盘 | T2 |
 | T4 | 图片链路 | input file 单选+canvas 压缩+上传、blob/签名 URL 展示策略、失败占位 | T3 |
-| T5 | 转人工 + 人工金标 + 收尾 | transfer、kind 区分渲染、错误态/空态、visualViewport 键盘适配、safe-area | T4 |
+| T5 | 转人工 + 错误态/空态收尾 | transfer、错误态卡片（401 清 sessionStorage + 返回引导）、空态 | T4 |
 | T6 | 小程序壳 | pages/mine（我的）、pages/webview、app.json 注册、跳转链路 | T1（并行） |
-| T7 | 部署 + E2E | nginx /h5/ location、构建产物部署脚本、浏览器 E2E 冒烟（登录→聊天→图片→转人工）、真机 web-view 验证 | T5, T6 |
+| T7 | 部署 + 验证 | nginx /h5/ location（root 上级目录写法）、access log token 脱敏、构建产物部署（rsync 时间戳目录+symlink 原子切换）、API 冒烟脚本（以传入 token 为前提，登录步骤改为种子 token 直插 sessions 表——wx.login code 在微信外不可得）、真机 web-view 验证 | T5, T6 |
 
 > 工时：T1-T5 各约 0.5d，T6 0.5d，T7 0.5d。H5 侧用 Vitest + Testing Library 对 API 层/工具函数做单测；组件交互以浏览器 E2E 冒烟为主。
 
 ## 5. Acceptance Criteria
 
-- [ ] AC1: 浏览器打开 `https://xdf.nonoai.com.cn/h5/?token=<有效token>`：历史消息（含图片、人工金标）完整展示，视觉对齐设计基线。
+- [ ] AC1: 浏览器打开 `https://xdf.nonoai.com.cn/h5/?token=<有效token>`：历史消息（含图片、人工金标）完整展示；视觉对照 preview.html 五项清单（hero 渐变+机器人/气泡圆角配色/人工金标+头像徽章/输入栏布局/表情盘网格）逐项一致。
 - [ ] AC2: H5 内发文字 → 收到 AI 回复（轮询路径）；发图片（自动压缩）→ 聊天内即时显示，历史重进后仍显示（签名 URL）。
 - [ ] AC3: 转人工 → system 提示出现；boss_reply 回流 → 气泡带「人工」金标 + 人形徽章头像。
+- [ ] AC3a: 表情盘 32 枚 emoji 与 `shenwei-home-mini/pages/chat/chat.js` EMOJIS 数组**逐枚字符相等**（单测断言）；弹出位置/grid 与原生页一致。
+- [ ] AC3b: 历史分页上滑加载更早——`GET /api/messages/list?cursor=<首条id>&limit=20` 单次返回 ≤20 条，加载态文案「正在加载…」可见，单测断言 cursor 推进与消息按 created_at ASC 归并正确（对齐 `tests/test_list_history_merge.py` 已覆盖的后端契约）。
 - [ ] AC4: token 缺失/失效 → H5 错误态卡片，不白屏不报未处理异常。
 - [ ] AC5: 小程序「我的」页 →「联系客服」→ web-view 打开 H5，身份直通可见自己的会话；原生 chat 页保留可回退。
-- [ ] AC6: `xdf.nonoai.com.cn/h5/` 生产可访问，同域调 API 无 CORS；刷新 `/h5/` 下任意路径 SPA fallback 正常。
-- [ ] AC7: iOS/Android 真机（开发版）各过一遍核心链路：键盘弹收后消息列表可见、底部安全区无遮挡、图片选择上传成功。
-- [ ] AC8: 仓库推送 GitHub，`shenwei-home-h5` 含 README（本地开发/构建/部署说明）。
+- [ ] AC6: 服务器侧 `xdf.nonoai.com.cn/h5/` 可访问（curl 200 + HTML 含构建资源引用），同域调 API 无 CORS；直接访问 `/h5/` 重载正常（单视图无路由，无任意深链概念）。
+- [ ] AC7: iOS/Android 真机（开发版）各过一遍核心链路：键盘弹收后消息列表可见、底部安全区无遮挡、图片选择上传成功、web-view 页分享菜单无 token 泄露（onShareAppMessage 已禁用/剥离）。
+- [ ] AC8: 仓库推送 GitHub（T0 建仓动作：shenwei-home-h5/ 加入现有仓并推送），`shenwei-home-h5` 含 README（本地开发/构建/部署说明）；H5 构建产物 gzip 体积 < 200KB。
 
 ## 6. Risks & Mitigations
 
@@ -139,6 +160,10 @@ location = /h5/index.html { add_header Cache-Control "no-cache"; }
 | nginx alias + try_files 拼接错误 | fallback 写完整 /h5/index.html；AC6 显式验证 |
 | 图片压缩在 H5 canvas 的内存峰值（大图） | 压缩前先按长边 1600px 缩放；超 10MB 前置拒绝 |
 | JSSDK 不可用导致 navigateBack 失效 | 错误态提供文案引导（手动返回），不强依赖 JSSDK |
+| web-view 页被转发，分享卡片携带含 token 的 src | pages/webview 的 onShareAppMessage 返回空/禁用分享；T6 实现 |
+| iOS input file 产出 HEIC、canvas 解码失败 | 解码失败回退原图上传；后端 415 时显示失败占位（与原生页「失败退回原图」行为对齐） |
+| Android 微信 X5 file chooser 偶发不弹 | 真机验收清单单列；JSSDK chooseImage 为备选路径 |
+| nginx access log 记录含 token 的 query | /h5/ 请求的日志做 token 脱敏（map $arg_token）；T7 实现 |
 
 ## 7. Notes
 
