@@ -1,8 +1,9 @@
 ---
 id: SHM-002
 title: chat 页 H5 化（React + web-view 嵌入）
-status: Draft
+status: Approved
 created: 2026-09-11
+approved: 2026-09-11
 author: shenwei
 inbox: docs/rfcs/inbox/2026-09-11-chat-h5-webview.md
 ---
