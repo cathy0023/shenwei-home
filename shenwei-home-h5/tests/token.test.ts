@@ -1,5 +1,5 @@
 /** T1: token 工具 — query 优先 / sessionStorage 兜底 / replaceState 清除 / 401 清理。 */
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { resolveToken, clearToken } from '../src/utils/token';
 
 describe('resolveToken', () => {
