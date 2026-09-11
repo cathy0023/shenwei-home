@@ -23,3 +23,8 @@ uploads/
 .venv/
 __pycache__/
 .pytest_cache/
+
+# sibling projects excluded from shenwei-home repo
+rpa-demo*
+sop-mini-*/
+docs/design/
