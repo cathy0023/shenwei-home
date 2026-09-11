@@ -233,7 +233,9 @@ export function Chat() {
             <h4>你可以这样问我</h4>
             {suggestions.map((q) => (
               <div key={q} className="suggest-item" onClick={() => void sendText(q)} role="button">
-                <span>✦ {q}</span>
+                <span className="sparkle">✦</span>
+                <span>{q}</span>
+                <span style={{ color: '#C3D4D9' }}>›</span>
               </div>
             ))}
           </div>
